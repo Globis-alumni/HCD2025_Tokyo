@@ -55,7 +55,7 @@ html, body {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: center/cover no-repeat url("./assets/hero_main.jpg");
+  background: center/cover no-repeat url("./assets/hero_main_v1.jpg");
 }
 .hero-bg::after {
   content:"";
