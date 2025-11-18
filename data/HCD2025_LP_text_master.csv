@@ -1,0 +1,54 @@
+section,element,key,ja_text,ja_lead,en_text,note
+hero,title_main,hero_title_jp,ホームカミングデー 2025,,Homecoming Day 2025,日本語が主、英字はサブでグレー表示
+hero,tagline,hero_tagline,選択肢、増える。言葉、整う。足が、前に出る。そんな日。,,Gather. Connect. Move forward.,キャッチコピー
+hero,meta,hero_meta,東京校 ／ オンライン ハイブリッド開催　12/14 13:00 start,,Tokyo Campus,日付・場所
+hero,cta_primary,btn_register,Peatixで申込,,Register on Peatix,https://hcd-tokyo-2025.peatix.com/view
+hero,cta_secondary,btn_calendar,カレンダーに追加(.ics),,Add to Calendar,カレンダーに追加(.ics)
+about,section_title,about_title,Homecoming Dayとは,,About,セクション見出し
+about,lead,about_lead,幅広い期のグロービス卒業生がゆるやかに再会し、学びと会話が交わる1日。『選択肢が増え、言葉が整い、足が前に出る。』——そんな機会をつくります。,,,
+about,tip,about_tip_1,卒業生みんなが主役,久しぶりの再会、新しい出会い。仲間やお世話になった講師と語らい、ここからまた新しいステージへ。,,
+about,tip,about_tip_2,交流を楽しむ,旧知の仲間と語り合い、新しい仲間と出会う時間。心がはずみ、つながりがまた新たな一歩へ。,,
+about,tip,about_tip_3,気軽に参加ができる,オンライン参加や途中の出入りも自由。予定に合わせて無理なく楽しめる。誰にでも開かれた交流の場。,,
+speakers,section_title,speakers_title,登壇者,,Speakers,セクション見出し
+speakers,keynote_heading,keynote_title,全体講演,,Keynote,メイン登壇者用見出し
+schedule,section_title,schedule_title,プログラム,,Program,
+schedule,lead,schedule_lead,当日の進行。詳細は当日変更になる可能性があります。,,,
+register,section_title,register_title,お申し込み,,Registration,
+register,lead,register_lead,Peatixにて受付いたします。参加検討中の方はカレンダー登録をどうぞ。,,,
+register,cta_primary,btn_register,Peatixで参加申込,,Register on Peatix,https://hcd-tokyo-2025.peatix.com/view
+register,cta_secondary,btn_calendar,カレンダーに追加(.ics),,Add to Calendar,カレンダーに追加(.ics)
+faq,section_title,faq_title,よくある質問,,FAQ,
+faq,q,faq_q1,参加できる条件は、何ですか？,,,
+faq,a,faq_a1,パートタイムMBA、フルタイムMBA全ての卒業生であればどなたでもご参加いただけます。なおイベントは他言語への通訳等はございません。予めご了承ください。,,,
+faq,q,faq_q2,参加希望の場合は、どうすれば良いですか？,,,
+faq,a,faq_a2,ご参加されたい場合は、このサイトにあるPeatixへのリンクボタンにてお申込みください。,,,
+faq,q,faq_q3,途中参加・途中退出はできますか？,,,
+faq,a,faq_a3,東京校での現地参加、オンライン参加どちらも途中の入退室は可能です。お気軽にご参加ください。,,,
+faq,q,faq_q4,参加者の上限はありますか？,,,
+faq,a,faq_a4,東京校参加の場合は、200名を上限としております。また分科会については希望セッションを選択し抽選にて決定いたしますが、空きがある場合は、イベント当日の申込みも可能となっています。,,,
+faq,q,faq_q5,抽選はどのような形になりますか？,,,
+faq,a,faq_a5,二期に分けて抽選にて決定をさせていただきます。第1次お申込みの期限は、11/22（土）23:59（抽選発表は、11/25（火）を予定しています。）、第2次お申込みの期限は、12/6（土）23:59（抽選発表は、12/9（火）を予定しています。）なお、第２次のお申込は、第1次で定員に達してない分科会のみとなります。また以降の受付は、当日空きのある分科会のみ選択となります。,,,
+faq,q,faq_q6,無料のイベントですか？,,,
+faq,a,faq_a6,"有料のイベントになっており、1,000円（消費税込）です。東京校ご参加の場合は、全体懇親会の軽食付きになっています。",,,
+faq,q,faq_q7,撮影は可能ですか？,,,
+faq,a,faq_a7,一部セッションは撮影不可の場合があります。当日の案内に従ってください。,,,
+faq,q,faq_q8,イベント終了後の懇親会は、ありますか？,,,
+faq,a,faq_a8,"二次会懇親会をスパイスHUB 六番町店にて実施する予定です（19:00～21:00  会費 3,500円を予定しています。）。Peatixの申込時に伺いますのでご回答ください。",,,
+access,section_title,access_title,アクセス,,Access,
+access,address,access_address,グロービス経営大学院 東京校,,GLOBIS University Tokyo Campus,
+footer,credit,footer_credit,運営：G会 東京校 幹事団,,Organized by: Alumni Network (Tokyo),太字・サイズ大きめで表示
+meta,description,meta_desc,グロービス経営大学院 ホームカミングデー2025｜卒業生がつながり、学び、次の一歩を見つける日。,,,SEOメタ説明
+schedule,label,program_section_title,全体スケジュール,,Breakout 1,同時並行ブロック1の見出し
+schedule,label,program_part1_title,第1部：オープニング＆全体講演,,Breakout 2,同時並行ブロック2の見出し
+schedule,label,program_break1_label,休憩（14:45〜15:00）,,,
+schedule,label,program_part2_title,第2部：分科会①／分科会②,,Time,
+schedule,label,program_part3_title,第3部：全体懇親会,,Room,
+schedule,label,program_break2_label,休憩（16:00〜16:20）,,,
+schedule,label,program_break3_label,休憩（17:20〜17:30）,,,
+schedule,label,program_legend_opening,オープニング,,Opening,全体開始挨拶
+schedule,label,program_legend_keynote,全体講演,,Keynote,メインスピーチ
+schedule,label,program_legend_breakout_part1,分科会①（講演／ワークショップ）15:00〜16:00,,Lecture,一般講演
+schedule,label,program_legend_breakout_part2,分科会②（講演／ワークショップ）16:20〜17:20,,Workshop,参加型セッション
+schedule,label,program_legend_networking,全体懇親会（東京校参加者のみ）,,,
+register,cta_primary,btn_register,Peatixで申込,,Register on Peatix,https://hcd-tokyo-2025.peatix.com/view
+register,cta_secondary,btn_calendar,カレンダーに追加(.ics),,Add to Calendar,カレンダーに追加(.ics)

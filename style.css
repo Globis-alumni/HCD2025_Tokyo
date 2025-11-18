@@ -1,0 +1,1046 @@
+/* ===== base ===== */
+:root {
+  --hero-max: 700px;
+  --cta-btn-w: clamp(220px, 38vw, 320px);
+  --gap: 16px;
+  --pad-x: 16px;
+  --blue: #2254d3;
+  --blue-ghost: #2254d3;
+  --text: #111;
+  --band-bg: rgba(34,84,211,.60);
+  --meta-color: #FFD54D;
+  --tag-fz: clamp(14px, 2.6vw, 18px);
+  --h1-fz: clamp(20px, 4.6vw, 36px);
+  --meta-fz: clamp(12px, 2.4vw, 16px);
+
+  /* ▼ 追加：フォントセット */
+  --font-base: -apple-system, BlinkMacSystemFont,
+               "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+               "Noto Sans JP", system-ui, sans-serif;
+  --font-round: "M PLUS Rounded 1c",
+                -apple-system, BlinkMacSystemFont,
+                "Hiragino Sans", "Noto Sans JP",
+                system-ui, sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 6px 0 0;   /* ← ヘッダー高さぶん上に余白 */
+  font-family: var(--font-base);
+  color: var(--text);
+  height: auto;
+  overflow-y: auto;
+}
+
+/* スマホでヘッダーが少し低い場合は調整してもOK */
+@media (max-width: 768px) {
+  body {
+    padding-top: 56px;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+.no-scroll { overflow: hidden; }
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  min-height: min(72vh, 780px);
+  display: grid;
+  place-items: center;
+  background: #f7f8ff;   /* ← スケジュールの青 */
+  overflow: visible;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: center/cover no-repeat url("./assets/hero_main.jpg");
+}
+.hero-bg::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,
+    rgba(255,255,255,.50) 0%,
+    rgba(255,255,255,.80) 55%,
+    rgba(255,255,255,.50) 100%);
+}
+.hero-stack {
+  position:relative;
+  z-index:2;
+  width:100%;
+  display:grid;
+  justify-items:center;
+  gap:16px;
+  padding:36px var(--pad-x);
+}
+.hero-band {
+  width:min(92vw,var(--hero-max));
+  background:var(--band-bg);
+  color:#fff;
+  display:grid;
+  gap:6px;
+  padding:12px clamp(12px,3vw,18px);
+}
+.hero-row--title {
+  display:grid;
+  grid-auto-flow:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+.hero-logo {
+  height:clamp(36px,10vw,64px);
+  width:auto;
+  flex:0 0 auto;
+}
+.hero-title {
+  margin:0;
+  font-weight:700;
+  font-size:var(--h1-fz);
+  line-height:1.2;
+}
+.hero-meta {
+  margin:0;
+  font-size:var(--meta-fz);
+  line-height:1.2;
+  color:var(--meta-color);
+  font-weight:700;
+  text-align:center;
+}
+.hero-tagline {
+  margin:0 0 -2px 0;
+  width:min(92vw,760px);
+  text-align:center;
+  font-size:var(--tag-fz);
+  font-weight:200;
+}
+.cta {
+  display:grid;
+  gap:12px;
+  justify-items:center;
+  margin-block:-2px 14px;
+}
+.cta .btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:var(--cta-btn-w);
+  min-height:44px;
+  padding:10px 14px;
+  font-weight:600;
+  text-decoration:none;
+  border-radius:6px;
+  border:2px solid var(--blue-ghost);
+}
+.btn-primary { background:var(--blue); color:#fff; }
+.btn-ghost   { background:#fff; color:var(--blue); }
+.cta-row {
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.br-sp { display:none; line-height:0; }
+
+@media (max-width:425px) {
+  .hero { min-height:86vh; }
+  :root { --cta-btn-w: clamp(200px,82vw,260px); }
+  .cta-row { gap:8px; }
+  .br-sp { display:block; }
+  .hero-band { justify-items:center; }
+  .hero-row--title { justify-content:center; }
+  .hero-title, .hero-meta {
+    text-align:center;
+    justify-self:center;
+  }
+  .hero-tagline { margin-bottom:4px; }
+  .cta { margin-block:-8px 12px; }
+}
+
+/* ===== About ===== */
+.about { padding:64px 16px; }
+.about-wrap {
+  width:min(92vw,980px);
+  margin-inline:auto;
+  display:grid;
+  justify-items:center;
+  gap:18px;
+}
+.about-title {
+  margin:0;
+  font-size:clamp(22px,3.6vw,32px);
+  font-weight:900;
+  text-align:center;
+}
+.about-lead {
+  margin:0 auto 18px;
+  width:min(92vw,820px);
+  text-align:center;
+  line-height:1.9;
+  font-size:clamp(12px,2.4vw,16px);
+  color:#222;
+}
+.about-cards {
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap:24px;
+  max-width:min(1100px,92vw);
+  margin:28px auto 0;
+}
+@media (max-width:900px){
+  .about-cards { grid-template-columns:1fr; }
+}
+.about-card {
+  position:relative;
+  overflow:hidden;
+  text-align:center;
+  background:#fff;
+  border:1.5px solid rgba(34,84,211,.25);
+  border-radius:12px;
+  padding:clamp(18px,3vw,26px);
+  min-height:clamp(140px,26vw,220px);
+  display:grid;
+  gap:10px;
+  align-items:center;
+  justify-items:center;
+}
+.about-card h3 {
+  z-index:1;
+  margin:0 0 6px;
+  font-weight:750;
+  font-size:clamp(18px,2.2vw,22px);
+  line-height:1.35;
+}
+.about-card p {
+  z-index:1;
+  margin:0;
+  width:min(88%,520px);
+  font-size:clamp(14px,1.9vw,16px);
+  line-height:1.7;
+  color:#333;
+}
+.about-card .wm {
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  z-index:0;
+  font-weight:900;
+  font-size:clamp(96px,18vw,200px);
+  color:var(--blue);
+  opacity:.10;
+  user-select:none;
+  pointer-events:none;
+  line-height:1;
+}
+
+/* ===== Speakers ===== */
+.speakers {
+  padding: 64px 16px;
+}
+
+.speakers-wrap {
+  width: min(55vw, 640px);
+  margin-inline: auto;
+}
+
+.speakers-title {
+  margin: 0 0 20px;
+  text-align: center;
+  font-weight: 900;
+  font-size: clamp(22px, 3.2vw, 32px);
+}
+
+/* 一覧レイアウト：スケジュールと同じく Grid ベース */
+.speakers-grid {
+  display: grid;
+  gap: 24px 24px;
+  justify-content: center;   /* 各列全体を中央寄せ */
+}
+
+/* カード共通（写真サイズの上限もここで制御） */
+.card {
+  border: 1px solid #e5e8f4;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  width: 100%;            /* ← 共通はこれだけにしておく */
+  margin-inline: auto;
+}
+
+/* メイン2名／その他のクラスは見た目では使わないが、HTML上の識別用に残す */
+.card--keynote {}
+.card--std {}
+
+/* メイン2名：少し大きめ */
+.card--keynote {
+  max-width: 240px;
+}
+
+/* その他：一回り小さめ */
+.card--std {
+  max-width: 180px;
+}
+
+/* 写真：1:1 比率 */
+.card__photo-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f4f6ff;
+  overflow: hidden;
+}
+
+.card__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 22%;
+}
+
+/* 本文（名前＋ボタン） */
+.card__body {
+  padding: 12px 12px 14px;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  text-align: center;
+}
+
+.card__name {
+  font-weight: 600;
+  font-size: clamp(14px, 1.8vw, 20px);
+  letter-spacing: 0.02em;
+}
+
+/* CTA ボタン */
+.card__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 4px 12px;
+  width: min(80px, 90%);
+  margin: 2px auto 0;
+  font-weight: 300;
+  font-size: 0.6rem;
+  text-decoration: none;
+  border-radius: 999px;
+  border: 2px solid var(--blue-ghost);
+  background: var(--blue);
+  color: #fff;
+  box-sizing: border-box;
+}
+
+/* PC 幅：4カラム＆1段目の2人だけ横幅2カラムぶん */
+@media (min-width: 960px) {
+  .speakers-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .speakers-grid > .card:nth-child(-n+2) {
+    grid-column: span 2;          /* 1段目は2人だけ */
+    justify-self: center;         /* span 2 の中で中央寄せ */
+  }
+}
+
+/* タブレット：2カラム */
+@media (min-width: 600px) and (max-width: 959px) {
+  .speakers-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* スマホ：1カラム中央寄せ */
+@media (max-width: 599px) {
+  .speakers-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Modal ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+}
+.modal.is-open {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+}
+.modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: min(920px, 100%);
+  max-height: 90vh;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.modal__body {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 22px;
+  padding: 22px;
+  align-items: flex-start;
+  overflow-y: auto;
+}
+.modal__photo {
+  width: 100%;
+  aspect-ratio: 4 / 4;
+  max-height: 300px;
+  object-fit: cover;
+  border: 1px solid #eef1fb;
+  border-radius: 8px;
+}
+.modal__name {
+  margin: 0;
+  font-weight: 750;
+  font-size: clamp(18px, 3vw, 26px);
+}
+.modal__aff {
+  margin: .3rem 0 .6rem;
+  font-weight: 600;
+}
+.modal__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem .5rem;
+  margin: .25rem 0 .25rem;
+}
+.badge-cohort {
+  display: inline-flex;
+  align-items: center;
+  padding: .25em .6em;
+  border-radius: 999px;
+  font-weight: 800;
+  background: var(--blue);
+  color: #fff;
+  font-size: 12px;
+}
+.modal__titles {
+  display: grid;
+  gap: .25rem;
+  margin: .4rem 0 .2rem;
+}
+.modal__bio {
+  margin: .6rem 0 0;
+  line-height: 1.8;
+}
+.modal__session {
+  display: block;
+  margin: .8rem 0 0;
+  font-weight: 650;
+  color: #111;
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: 14px;
+  cursor: default;
+  pointer-events: none;
+}
+.modal__close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: 0;
+  background: #fff;
+  color: #111;
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+  font-size: 20px;
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+/* Modal responsive */
+@media (max-width: 1024px) {
+  .modal__body {
+    grid-template-columns: 260px 1fr;
+    gap: 18px;
+    padding: 18px;
+  }
+  .modal__photo { max-height: 360px; }
+}
+@media (max-width: 639px) {
+  .modal.is-open { padding: 10px; }
+  .modal__dialog {
+    width: 100%;
+    max-height: 90vh;
+    border-radius: 10px;
+  }
+  .modal__body {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+  .modal__photo {
+    max-width: 260px;
+    max-height: 320px;
+    margin: 0 auto 12px;
+  }
+}
+
+/* ===== PROGRAM / TIMETABLE ===== */
+.program {
+  padding: 64px 16px 72px;
+  background: #f7f8ff;
+}
+.program-wrap {
+  width: min(92vw, 1100px);
+  margin-inline: auto;
+}
+.program-title {
+  margin: 0 0 28px;
+  text-align: center;
+  font-weight: 800;
+  font-size: clamp(22px, 3.2vw, 32px);
+}
+
+/* 全体ブロック（第1〜第3部 + 休憩） */
+.program-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 各「第◯部」のカード */
+.program-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0,0,0,.04);
+  padding: 20px 22px 22px;
+  border: 1px solid #e5e8f4;
+}
+.program-card__head {
+  margin: 0 0 14px;
+  text-align: center;
+  font-weight: 750;
+  font-size: clamp(18px, 2.2vw, 24px);
+}
+.program-card__body {
+  display: grid;
+  gap: 12px;
+}
+
+/* 第1部の会場・ラベル・タイトル */
+.program-part-track,
+.program-part-caption,
+.program-session-main-title {
+  text-align: center;
+}
+.program-part-caption {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.program-session-main-title {
+  margin: 2px 0 8px;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.program-part-time {
+  margin: 0 0 4px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* 休憩バー */
+.program-break {
+  display: block;
+  max-width: 360px;
+  margin: 24px auto;
+  padding: 6px 18px;
+  border-radius: 6px;
+  border: 1.0px solid rgba(34,84,211,.25);
+  background: #f0f2ff;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+.program-break--inner {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background: #eef2ff;
+}
+
+/* 分科会① / ② のコンテナ */
+.program-breakout {
+  display: grid;
+  gap: 10px;
+}
+.program-breakout__title {
+  margin: 0;
+  text-align: center;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+/* 第1部のスピーカーカードグリッド */
+.program-speaker-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+/* プログラム用の小さいカード（第1部キーノート登壇者） */
+.program-speaker-card {
+  border-radius: 4px;
+  border: 1.0px solid rgba(34,84,211,.25);
+  background: #fff;
+  padding: 10px 10px 12px;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.03);
+}
+
+/* 写真：丸 → 正方形（やや角丸） */
+.program-speaker-card__photo {
+  width: 96px;
+  height: 96px;
+  border-radius: 4px;
+  object-fit: cover;
+  object-position: 50% 22%;
+  background: #f4f6ff;
+}
+
+/* 名前：青系リンク風＆クリック可能 */
+.program-speaker-card__name {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+  color: var(--blue);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* （使わない場合は残しておいても害はありませんが、CTAは今回非表示にしてOK） */
+.program-speaker-card__role {
+  margin: 0;
+  font-size: 11px;
+  color: #666;
+  text-align: center;
+}
+
+
+/* 第2部：セッションカードグリッド */
+.program-session-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+@media (max-width: 960px) {
+  .program-session-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .program-session-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* セッションカード本体（分科会のカード） */
+.program-session-card {
+  background: rgba(34,84,211,.03);
+  border-radius: 4px;
+  border: 1.5px solid rgba(34,84,211,.25);
+  padding: 14px 16px 12px;
+  display: grid;
+  gap: 6px;
+}
+.program-session-card__header,
+.program-session-card__title,
+.program-session-card__track,
+.program-session-card__speakers {
+  text-align: center;
+}
+.program-session-card__session-label {
+  font-weight: 800;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+.program-session-card__title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.program-session-card__track {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-bottom: 4px;
+}
+.program-session-card__speakers {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.program-session-card__speaker-link {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 12px;
+  font-weight: 800;
+}
+.program-session-card__note {
+  font-size: 11px;
+  color: #555;
+  margin-top: 2px;
+}
+
+/* スマホで少し余白を詰める */
+@media (max-width: 639px) {
+  .program-card {
+    padding: 16px 14px 18px;
+  }
+  .program-card__head {
+    font-size: 16px;
+  }
+}
+
+/* FAQ セクション */
+.faq-section {
+  background: #f7f8ff;
+  margin-top: 80px;
+  padding: 40px 0 60px;
+  border-top: 1px solid #eee;
+}
+.faq-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.faq-list {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.faq-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e5e5e5;
+  padding: 12px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+.faq-card__question {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  margin: 0;
+  cursor: pointer;
+}
+.faq-card__q-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: left;
+}
+.faq-card__icon {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.faq-card__answer {
+  margin-top: 8px;
+  padding-top: 8px;
+  padding-left: 2rem;
+  padding-right: 3rem;
+  border-top: 1px dashed #ddd;
+}
+.faq-card__answer p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+.faq-card.is-open {
+  border-color: #d0d0ff;
+}
+
+/* ===== MAP / ACCESS ===== */
+.access-section {
+  margin-top: 20px;
+  padding: 40px 0 60px;
+  border-top: 1px solid #eee;
+}
+.access-title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.access-map-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+.access-map-wrap iframe {
+  width: 75%;
+  height: 540px;
+  border: 0;
+}
+.access-venue,
+.access-note {
+  text-align: center;
+}
+.access-venue {
+  margin-top: 16px;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.access-note {
+  margin-top: 4px;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* ===== FOOTER ===== */
+.site-footer {
+  background: #f7f8ff;
+  margin-top: 60px;
+  padding: 24px 0 32px;
+  border-top: 1px solid #eee;
+}
+.site-footer__inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+.site-footer__logo {
+  width: 56px;
+  height: auto;
+  display: block;
+}
+.site-footer__text {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+}
+@media (max-width: 480px) {
+  .site-footer__logo {
+    width: 44px;
+  }
+  .site-footer__text {
+    font-size: 0.9rem;
+  }
+}
+
+/* ===== GLOBAL HEADER ===== */
+.global-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: #f7f8ff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+.global-header__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+.global-header__brand {
+  display: none;
+}
+.global-header__nav {
+  flex: 0 1 auto;
+}
+.global-header__nav-list {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.95rem;
+}
+.global-header__nav-list a {
+  text-decoration: none;
+  color: #111;
+  transition: opacity 0.2s;
+}
+.global-header__nav-list a:hover {
+  opacity: 0.7;
+}
+.global-header__cta {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 5px;
+  border-radius: 8px;
+  background: #0052ff;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.global-header__cta:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.global-header__menu-btn {
+  display: none;
+  margin-left: auto;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.global-header__menu-btn span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  margin: 4px auto;
+  background: #111;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.global-header__drawer {
+  position: fixed;
+  inset: 56px 0 auto;
+  background: #ffffff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.global-header__drawer-list {
+  list-style: none;
+  margin: 0;
+  padding: 12px 16px 16px;
+}
+.global-header__drawer-list li + li {
+  border-top: 1px solid #eee;
+}
+.global-header__drawer-list a {
+  display: block;
+  padding: 12px 4px;
+  text-decoration: none;
+  color: #111;
+  font-size: 0.95rem;
+}
+.global-header.is-open .global-header__drawer {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.global-header.is-open .global-header__menu-btn span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.global-header.is-open .global-header__menu-btn span:nth-child(2) {
+  opacity: 0;
+}
+.global-header.is-open .global-header__menu-btn span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+@media (max-width: 768px) {
+  .global-header__inner {
+    justify-content: space-between;
+  }
+  .global-header__nav {
+    display: none;
+  }
+  .global-header__cta {
+    display: none;
+  }
+  .global-header__menu-btn {
+    display: block;
+  }
+}
+
+/* ===== Section spacing (上下余白の共通設定) ===== */
+.about,
+.program,
+.speakers,
+.faq-section,
+.access-section {
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+.faq-section,
+.access-section {
+  margin-top: 0;
+}
+.site-footer {
+  margin-top: 48px;
+}
+
+/* ===== ROUNDED FONT (見出し・ボタン用) ===== */
+.hero-title,
+.hero-meta,
+.hero-tagline,
+.about-title,
+.program-title,
+.speakers-title,
+.faq-title,
+.access-title {
+  font-family: var(--font-round);
+  font-weight: 700;
+}
+.btn,
+.card__cta,
+.global-header__nav-list a,
+.global-header__cta,
+.program-session-card__speaker-link,
+.program-speaker-card__name,
+.faq-card__q-text,
+.faq-card__icon {
+  font-family: var(--font-round);
+  font-weight: 650;
+}
+.faq-card__answer p {
+  font-family: var(--font-base);
+  font-weight: 400;
+}

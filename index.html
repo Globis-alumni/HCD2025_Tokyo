@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HCD2025 | HERO + ABOUT</title>
+
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="icon" sizes="32x32" href="./assets/hcd-favicon-32.png">
+  <link rel="icon" sizes="16x16" href="./assets/hcd-favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/hcd-apple-touch-180.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+  href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap"
+  rel="stylesheet"
+  />
+
+  <!-- デバッグ用ラベル（body があるか確認してから実行） -->
+  <script>
+    (function () {
+      document.documentElement.classList.remove('no-scroll');
+      if (document.body) {
+        document.body.classList.remove('no-scroll');
+      }
+      var b = document.createElement('div');
+      b.id = 'boot-flag';
+      b.style.cssText = 'position:fixed;top:8px;left:8px;z-index:99999;background:#2254d3;color:#fff;padding:4px 8px;border-radius:6px;font:700 12px/1.4 system-ui';
+      b.textContent = 'JS BOOT OK';
+      document.addEventListener('DOMContentLoaded', function(){ document.body.appendChild(b); });
+      window.addEventListener('load', function(){ setTimeout(function(){ b.remove(); }, 1500); });
+    })();
+  </script>
+</head>
+<body>
+<!-- ===== Header ===== -->
+<header class="global-header">
+  <div class="global-header__inner">
+    <!-- 左のサイトタイトルは使わないので中身なし -->
+    <div class="global-header__brand" aria-hidden="true"></div>
+
+    <!-- PC用ナビ（中央寄せ） -->
+    <nav class="global-header__nav">
+      <ul class="global-header__nav-list">
+        <li><a href="#hero"><strong>TOP</strong></a></li>
+        <li><a href="#about"><strong>HCDとは</strong></a></li>
+        <li><a href="#program"><strong>タイムテーブル</strong></a></li>
+        <li><a href="#speakers"><strong>登壇者</strong></a></li>
+        <li><a href="#faq"><strong>よくあるご質問</strong></a></li>
+        <li><a href="#access"><strong>アクセス</strong></a></li>
+      </ul>
+    </nav>
+
+    <!-- CTAボタン（Peatix） -->
+    <a href="https://hcd-tokyo-2025.peatix.com/view"
+       class="global-header__cta"
+       target="_blank"
+       rel="noopener">
+      参加申込(Peatix)
+    </a>
+
+    <!-- スマホ用ハンバーガーボタン -->
+    <button class="global-header__menu-btn"
+            type="button"
+            aria-label="メニューを開く"
+            aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- スマホ用ドロワーメニュー -->
+  <nav class="global-header__drawer" aria-label="グローバルナビゲーション">
+    <ul class="global-header__drawer-list">
+      <li><a href="#hero"><strong>TOP</strong></a></li>
+      <li><a href="#about"><strong>HCDとは</strong></a></li>
+      <li><a href="#program"><strong>タイムテーブル</strong></a></li>
+      <li><a href="#speakers"><strong>登壇者</strong></a></li>
+      <li><a href="#faq"><strong>よくあるご質問</strong></a></li>
+      <li><a href="#access"><strong>アクセス</strong></a></li>
+      <li><a href="https://hcd-tokyo-2025.peatix.com/view" target="_blank" rel="noopener">
+        <strong>参加申込(Peatix)</strong>
+      </a></li>
+    </ul>
+  </nav>
+</header>
+<!-- ===== HERO ===== -->
+  <header id="hero" class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-stack">
+      <div class="hero-band">
+        <div class="hero-row hero-row--title">
+          <img class="hero-logo" src="./assets/logo_hcd_2025.png" alt="ホームカミングデー ロゴ" />
+          <h1 id="hero-title-text" class="hero-title"></h1>
+        </div>
+        <p id="hero-meta" class="hero-meta"></p>
+      </div>
+      <p id="hero-tagline" class="hero-tagline"></p>
+      <div class="cta">
+        <a id="btn-register" class="btn btn-primary" href="#" target="_blank" rel="noopener"></a>
+        <div class="cta-row">
+          <a id="btn-cal-ics" class="btn btn-ghost" href="#" target="_blank" rel="noopener"></a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== About ===== -->
+    <section id="about" class="about">
+      <div class="about-wrap">
+        <h2 id="about-title" class="about-title"></h2>
+        <p id="about-lead" class="about-lead"></p>
+        <div class="about-cards"></div>
+      </div>
+    </section>
+
+    <!-- ===== Program / Schedule ===== -->
+    <section id="program" class="program">
+    <div class="program-wrap">
+    <h2 id="program-title" class="program-title">タイムテーブル</h2>
+    <div id="program-blocks" class="program-blocks">
+      <!-- JS で自動挿入 -->
+    </div>
+    </div>
+    </section>
+	  
+    <!-- ===== Speakers ===== -->
+    <section id="speakers" class="speakers">
+      <div class="speakers-wrap">
+        <h2 class="speakers-title">登壇者</h2>
+        <div id="speakers-grid" class="speakers-grid"></div>
+      </div>
+    </section>
+
+    <!-- ===== Modal ===== -->
+    <div id="speaker-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="modal__backdrop" data-close></div>
+      <div class="modal__dialog" role="document" aria-labelledby="modal-name">
+        <button class="modal__close" aria-label="閉じる" data-close><span aria-hidden="true">×</span></button>
+        <div class="modal__body">
+          <img id="modal-photo" alt="" class="modal__photo" />
+          <div class="modal__text">
+            <h3 id="modal-name" class="modal__name"></h3>
+            <p id="modal-aff" class="modal__aff"></p>
+            <div id="modal-badges" class="modal__badges"></div>
+            <div id="modal-titles" class="modal__titles"></div>
+            <p id="modal-bio" class="modal__bio"></p>
+            <a id="modal-session" class="modal__session" href="#">登壇セッション：</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- ===== FAQ ===== -->
+<section id="faq" class="faq-section">
+  <h2 id="faq-title" class="faq-title">FAQ</h2>
+  <div id="faq-list" class="faq-list"></div>
+</section>
+
+<!-- ===== MAP ===== -->	  
+<section id="access" class="access-section">
+  <h2 class="access-title">アクセス</h2>
+
+  <div class="access-map-wrap">
+    <iframe
+      src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d2744.015415992807!2d139.73490819595074!3d35.685308306227384!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188c637954c8f7%3A0xf45136104fe98b59!2z44Kw44Ot44O844OT44K557WM5Za25aSn5a2m6ZmiIOadseS6rOagoQ!5e0!3m2!1sja!2sjp!4v1763309813385!5m2!1sja!2sjp" width="600" height="450" style="border:0;" allowfullscreen=""loading="lazy"referrerpolicy="no-referrer-when-downgrade"allowfullscreen
+    ></iframe>
+  </div>
+
+  <p class="access-venue">グロービス経営大学院 東京校</p>
+  <p class="access-note">※オンライン参加の方は、Zoomにてご参加ください。</p>
+</section>
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <img
+      src="./assets/logo_Galumni.png"
+      alt="G会ロゴ"
+      class="site-footer__logo"
+    />
+    <p class="site-footer__text">
+      運営：G会 東京校 幹事団
+    </p>
+  </div>
+</footer>
+</main>
+
+  <script defer src="./script.js"></script>
+</body>
+</html>
