@@ -64,17 +64,11 @@ const fetchCsvStrict = async (path) => {
 };
 
 // schedule_master 専用ローダー
-// 先頭行「start,end,title,desc,location」をスキップしてからパース
+// HCD2025 用：1行目をヘッダーとしてそのまま使う
 const loadScheduleRows = async () => {
   const raw = await fetchText('./data/HCD2025_schedule_master.csv');
   if (!raw) return [];
-  const lines = raw.split(/\r?\n/).filter(l => l.trim() !== '');
-  if (!lines.length) return [];
-  const first = lines[0].trim();
-  const body = first.startsWith('start,end,title,desc,location')
-    ? lines.slice(1).join('\n')
-    : raw;
-  return csvToObjects(body);
+  return csvToObjects(raw);
 };
 
 // ---------- Text maps（HERO/ABOUT/PROGRAM 用） ----------
@@ -195,24 +189,24 @@ window.addEventListener('load', clearScrollLock);
   const grid = sec.querySelector(".about-cards");
 
   const applyAboutLeadBreak = (s = "") => {
-  const isSP = window.matchMedia("(max-width: 425px)").matches;
+    const isSP = window.matchMedia("(max-width: 425px)").matches;
 
-  // いったん既存の <br> は全部削除
-  let t = s.replace(/\s*<br\s*\/?>\s*/g, "");
+    // いったん既存の <br> は全部削除
+    let t = s.replace(/\s*<br\s*\/?>\s*/g, "");
 
-  if (isSP) {
-    // スマホ専用の改行位置
-    t = t
-      .replace("ゆるやかに再会し、", "ゆるやかに再会し、<br>")
-      .replace("学びと会話が交わる1日。", "学びと会話が交わる1日。<br>")
-      // 『…足が前に出る。』 のあとで必ず改行
-      .replace(/足が前に出る。』\s*——/, "足が前に出る。』<br>——");
-  } else {
-    // PC / タブレットは今までどおり1ヶ所だけ
-    t = t.replace("学びと会話が交わる1日。", "学びと会話が交わる1日。<br>");
-  }
+    if (isSP) {
+      // スマホ専用の改行位置
+      t = t
+        .replace("ゆるやかに再会し、", "ゆるやかに再会し、<br>")
+        .replace("学びと会話が交わる1日。", "学びと会話が交わる1日。<br>")
+        // 『…足が前に出る。』 のあとで必ず改行
+        .replace(/足が前に出る。』\s*——/, "足が前に出る。』<br>——");
+    } else {
+      // PC / タブレットは今までどおり1ヶ所だけ
+      t = t.replace("学びと会話が交わる1日。", "学びと会話が交わる1日。<br>");
+    }
 
-  return t;
+    return t;
   };
 
   (async () => {
@@ -351,7 +345,7 @@ window.addEventListener('load', clearScrollLock);
     });
   }
 
-   function openModal(sp) {
+  function openModal(sp) {
     if (!MODAL || !EL || !sp) return;
 
     const fullList = window.HCD_SPEAKERS_FULL || [];
@@ -435,10 +429,10 @@ window.addEventListener('load', clearScrollLock);
         const name_en = pick(r, ['name_en', 'name_en_us', 'name_en_gb'], '');
         const affiliation = pick(r, ['affiliation', 'org', 'organization', 'company'], '');
 
-        const session_title_raw = pick(r, ['session_title'], '');
+        const session_title_raw = pick(r, ['session_title','session_title_filled'], '');
         const session_titles_self = session_title_raw
           ? session_title_raw
-              .split(/[，,／\/\n]/)   // カンマ・全角カンマ・スラッシュなどで分割
+              .split(/[，,／\/\n]/)
               .map(s => s.trim())
               .filter(Boolean)
           : [];
@@ -481,7 +475,7 @@ window.addEventListener('load', clearScrollLock);
 
       const ordered = ORDER.map(id => byId.get(id)).filter(Boolean);
 
-      GRID.innerHTML = ''; // フラットにカードを詰める（昔のレイアウト前提）
+      GRID.innerHTML = ''; // フラットにカードを詰める
 
       const createCard = (sp) => {
         const card = document.createElement('article');
@@ -538,8 +532,8 @@ window.addEventListener('load', clearScrollLock);
     }
   })();
 })();
-	  
-	  
+
+
 // =============================================================================================
 // PROGRAM（第1〜3部：テキストマスター＋スケジュール＋登壇者リンク）
 // =============================================================================================
@@ -608,12 +602,8 @@ window.addEventListener('load', clearScrollLock);
     const talkFromMap  = id ? (talkMap[id]  || '') : '';
     const labelFromMap = id ? (labelMap[id] || '') : '';
 
-    // schedule 側に入っている講演タイトル（あれば最優先）
-    const talkTitleDirect =
-      session.talk_title ||
-      session.session_title_filled ||
-      session.session_title ||
-      '';
+    // schedule 側に入っている講演タイトル（あれば最優先：desc 起点）
+    const talkTitleDirect = session.talk_title || '';
 
     // speakers_master 側から拾えるタイトル（最初の1本）
     const sessionTitleFromSpeakers =
@@ -632,7 +622,7 @@ window.addEventListener('load', clearScrollLock);
       (talkFromMap && talkFromMap.trim()) ||
       (sessionTitleFromSpeakers && sessionTitleFromSpeakers.trim()) ||
       labelFromMap;
-	  
+
     if (sessionTitle) {
       const titleEl = document.createElement('div');
       titleEl.className = 'program-session-card__title';
@@ -705,10 +695,10 @@ window.addEventListener('load', clearScrollLock);
           ''
         );
 
-        // ★ 実際の講演タイトル
+        // ★ 実際の講演タイトル（HCD2025 では desc がメイン）
         const talkTitle = pick(
           r,
-          ['session_title_filled', 'session_title', 'desc', '概要'],
+          ['desc', '概要', 'session_title_filled', 'session_title'],
           ''
         );
 
@@ -741,6 +731,7 @@ window.addEventListener('load', clearScrollLock);
           talkTitleBySessionId[session_id] = label;
         }
       });
+
       // 3) スピーカー情報：session_id → speaker[]
       const speakerRows = await fetchCsvStrict('./data/HCD2025_speakers_master.csv');
       const bySession = {};
@@ -858,7 +849,7 @@ window.addEventListener('load', clearScrollLock);
         mapText.program_legend_keynote || '全体講演';
       body1.append(keynoteLabel);
 
-      // 全体講演タイトル（talkTitle 優先だが、中身は schedule_master のもの）
+      // 全体講演タイトル
       if (keynoteRow && keynoteRow.session_id) {
         const spList = bySession[keynoteRow.session_id] || [];
         const sid    = keynoteRow.session_id;
@@ -1019,7 +1010,7 @@ window.addEventListener('load', clearScrollLock);
 
       const part3Row =
         schedule.find(r => (r.session_id || '').trim() === 'S-3') ||
-        schedule.find(r => /懇親会/.test(r.session_title_filled || r.title || ''));
+        schedule.find(r => /懇親会/.test((r.talk_title || r.title || '')));
 
       // 時間
       const time3 = document.createElement('p');
@@ -1046,7 +1037,6 @@ window.addEventListener('load', clearScrollLock);
     }
   })();
 })();
-
 
 
 // =============================================================================================
@@ -1120,6 +1110,7 @@ window.addEventListener('load', clearScrollLock);
     }
   })();
 })();
+
 
 // =============================================================================================
 // HEADER NAV: hamburger & smooth scroll
