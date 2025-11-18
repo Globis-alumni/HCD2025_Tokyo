@@ -667,7 +667,7 @@ window.addEventListener('load', clearScrollLock);
 
       const isIto = speakers.some(sp => sp.name_jp === '伊藤浩孝');
       titleEl.textContent = isIto
-        ? `${sessionTitle}　※東京校参加者限定。`
+        ? `${sessionTitle}　※東京校参加者限定`
         : sessionTitle;
 
       card.append(titleEl);
