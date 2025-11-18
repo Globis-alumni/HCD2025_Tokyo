@@ -543,7 +543,6 @@ window.addEventListener('load', clearScrollLock);
   const BLOCKS = document.getElementById('program-blocks');
   if (!SEC || !TITLE || !BLOCKS) return;
 
-  // ローカル pick
   const pick = (row, keys, def='') => {
     for (const k of keys) {
       const v = row[k];
@@ -554,7 +553,6 @@ window.addEventListener('load', clearScrollLock);
 
   const SESSION_NUM = ['①','②','③','④','⑤','⑥'];
 
-  // 休憩バー
   const createBreakBar = (label) => {
     const bar = document.createElement('div');
     bar.className = 'program-break';
@@ -562,7 +560,6 @@ window.addEventListener('load', clearScrollLock);
     return bar;
   };
 
-  // 「第◯部」のカードコンテナ
   const createPartCard = (headingText) => {
     const card = document.createElement('section');
     card.className = 'program-card';
@@ -578,7 +575,6 @@ window.addEventListener('load', clearScrollLock);
     return { card, body };
   };
 
-  // 第2部のセッションカード
   const createSessionCard = (opts) => {
     const { index, session, speakers } = opts;
 
@@ -595,17 +591,19 @@ window.addEventListener('load', clearScrollLock);
     header.append(sessionLabel);
     card.append(header);
 
-    // ---- タイトル決定ロジック ----
     const labelMap = window.HCD_SESSION_TITLE_BY_ID || {};
     const talkMap  = window.HCD_SESSION_TALK_TITLE_BY_ID || {};
     const id = (session.session_id || '').trim();
     const talkFromMap  = id ? (talkMap[id]  || '') : '';
     const labelFromMap = id ? (labelMap[id] || '') : '';
 
-    // schedule 側に入っている講演タイトル（あれば最優先：desc 起点）
-    const talkTitleDirect = session.talk_title || '';
+    // schedule 側
+    const talkTitleDirect =
+      session.talk_title ||       // schedule から詰めた講演タイトル
+      session.session_title ||    // もし生のカラムがあれば
+      '';
 
-    // speakers_master 側から拾えるタイトル（最初の1本）
+    // speakers_master 側（保険）
     const sessionTitleFromSpeakers =
       (speakers || [])
         .map(sp =>
@@ -628,7 +626,6 @@ window.addEventListener('load', clearScrollLock);
       titleEl.className = 'program-session-card__title';
 
       const isIto = speakers.some(sp => sp.name_jp === '伊藤浩孝');
-      // 伊藤さんだけ注記をタイトルの末尾に連結
       titleEl.textContent = isIto
         ? `${sessionTitle}　※東京校参加者限定。`
         : sessionTitle;
@@ -636,7 +633,6 @@ window.addEventListener('load', clearScrollLock);
       card.append(titleEl);
     }
 
-    // 会場
     const track = session.track || (speakers[0]?.track || '');
     if (track) {
       const trackEl = document.createElement('div');
@@ -645,7 +641,6 @@ window.addEventListener('load', clearScrollLock);
       card.append(trackEl);
     }
 
-    // 登壇者リンク
     const speakersWrap = document.createElement('div');
     speakersWrap.className = 'program-session-card__speakers';
 
@@ -668,17 +663,15 @@ window.addEventListener('load', clearScrollLock);
 
   (async () => {
     try {
-      // 1) テキストマスター
       const { mapText } = await loadTextMaps();
       TITLE.textContent =
         mapText.program_section_title || 'Homecoming Day 2025 全体スケジュール';
 
-      // 2) スケジュール（ラベル用＋講演タイトル用を分離）
       const scheduleRowsRaw = await loadScheduleRows();
 
       const schedule = [];
-      const titleBySessionId = {};      // ラベル用（全体講演 / 分科会① など）
-      const talkTitleBySessionId = {};  // 講演タイトル用
+      const titleBySessionId = {};
+      const talkTitleBySessionId = {};
 
       scheduleRowsRaw.forEach(r => {
         const session_id = pick(
@@ -688,17 +681,16 @@ window.addEventListener('load', clearScrollLock);
         );
         if (!session_id) return;
 
-        // ★ ラベル（「全体講演」「分科会①」など）
         const label = pick(
           r,
           ['title', 'セッション名'],
           ''
         );
 
-        // ★ 実際の講演タイトル（HCD2025 では desc がメイン）
+        // ★ HCD2025: desc が講演タイトル
         const talkTitle = pick(
           r,
-          ['desc', '概要', 'session_title_filled', 'session_title'],
+          ['desc', '概要', 'session_title'],  // 必要ならここに列名を追加
           ''
         );
 
@@ -711,28 +703,23 @@ window.addEventListener('load', clearScrollLock);
         const row = {
           ...r,
           session_id,
-          title: label,        // ラベルとして使う
+          title: label,
           talk_title: talkTitle,
           track,
           tags
         };
         schedule.push(row);
 
-        // セッションID → ラベル
         if (label) {
           titleBySessionId[session_id] = label;
         }
-
-        // セッションID → 講演タイトル
         if (talkTitle) {
           talkTitleBySessionId[session_id] = talkTitle;
         } else if (label) {
-          // 講演タイトルが空なら、ラベルで穴埋め
           talkTitleBySessionId[session_id] = label;
         }
       });
 
-      // 3) スピーカー情報：session_id → speaker[]
       const speakerRows = await fetchCsvStrict('./data/HCD2025_speakers_master.csv');
       const bySession = {};
 
@@ -753,8 +740,8 @@ window.addEventListener('load', clearScrollLock);
         const title5 = pick(r, ['title5'], '');
         const track  = pick(r, ['track'], '');
 
-        // speakers_master 側に書いてあるセッションタイトル（講演タイトル／補完用）
-        const session_title_raw = pick(r, ['session_title','session_title_filled'], '');
+        // speakers_master 側にあるセッションタイトル（補完用）
+        const session_title_raw = pick(r, ['session_title'], '');
 
         const session_raw = pick(r, ['session_id','Session_ID'], '');
         const session_ids = session_raw
@@ -783,17 +770,14 @@ window.addEventListener('load', clearScrollLock);
           session_titles
         };
 
-        // session_id → speaker[] のインデックス & タイトル補完
         session_ids.forEach(sid => {
           if (!sid) return;
           if (!bySession[sid]) bySession[sid] = [];
           bySession[sid].push(sp);
 
-          // ラベルが空なら speakers 側タイトルで補完（第1部など想定）
           if (session_title_raw && !titleBySessionId[sid]) {
             titleBySessionId[sid] = session_title_raw;
           }
-          // talkTitle も、schedule 側に無い場合だけ補完
           if (session_title_raw && !talkTitleBySessionId[sid]) {
             talkTitleBySessionId[sid] = session_title_raw;
           }
@@ -802,32 +786,26 @@ window.addEventListener('load', clearScrollLock);
         return sp;
       });
 
-      // PROGRAM / SPEAKERS / モーダル共通のマップ
-      window.HCD_SESSION_TITLE_BY_ID      = titleBySessionId;      // ラベル（全体講演／分科会① など）
-      window.HCD_SESSION_TALK_TITLE_BY_ID = talkTitleBySessionId;  // 講演タイトル
-      window.HCD_SPEAKERS_FULL           = normSpeakers;
+      window.HCD_SESSION_TITLE_BY_ID      = titleBySessionId;
+      window.HCD_SESSION_TALK_TITLE_BY_ID = talkTitleBySessionId;
+      window.HCD_SPEAKERS_FULL            = normSpeakers;
 
-      // ===================================================================
-      // 第1部：オープニング＆全体講演
-      // ===================================================================
+      // ---------- 第1部 ----------
       const part1Title =
         mapText.program_part1_title || '第1部：オープニング＆全体講演（13:00〜14:45）';
       const { card: card1, body: body1 } = createPartCard(part1Title);
 
-      // Keynote セッション（S-KN-03 優先）
       const keynoteRow =
         schedule.find(r => r.session_id === 'S-KN-03') ||
         schedule.find(r => (r.tags || []).includes('Keynote')) ||
         schedule.find(r => /全体講演/.test(r.title || ''));
 
-      // 時間
       const time1 = document.createElement('p');
       time1.className = 'program-part-time';
       time1.textContent =
         mapText.program_part1_time_range || '13:00〜14:45';
       body1.append(time1);
 
-      // 会場
       if (keynoteRow && keynoteRow.track) {
         const trackEl = document.createElement('p');
         trackEl.className = 'program-part-track';
@@ -835,26 +813,22 @@ window.addEventListener('load', clearScrollLock);
         body1.append(trackEl);
       }
 
-      // オープニングラベル
       const openingLabel = document.createElement('p');
       openingLabel.className = 'program-part-caption';
       openingLabel.textContent =
         mapText.program_legend_opening || 'オープニング';
       body1.append(openingLabel);
 
-      // 全体講演ラベル
       const keynoteLabel = document.createElement('p');
       keynoteLabel.className = 'program-part-caption';
       keynoteLabel.textContent =
         mapText.program_legend_keynote || '全体講演';
       body1.append(keynoteLabel);
 
-      // 全体講演タイトル
       if (keynoteRow && keynoteRow.session_id) {
         const spList = bySession[keynoteRow.session_id] || [];
         const sid    = keynoteRow.session_id;
 
-        // speakers_master 側からのフォールバック
         const keynoteFromSpeakers =
           (spList || [])
             .map(sp =>
@@ -879,7 +853,6 @@ window.addEventListener('load', clearScrollLock);
           body1.append(st);
         }
 
-        // キーノート登壇者ミニカード
         const grid = document.createElement('div');
         grid.className = 'program-speaker-grid';
 
@@ -910,20 +883,17 @@ window.addEventListener('load', clearScrollLock);
 
       BLOCKS.append(card1);
 
-      // 休憩①
+      // ---------- 休憩① ----------
       BLOCKS.append(
         createBreakBar(mapText.program_break1_label || '休憩（14:45〜15:00）')
       );
 
-      // ===================================================================
-      // 第2部：分科会①／分科会②
-      // ===================================================================
+      // ---------- 第2部：分科会 ----------
       const part2Title =
         mapText.program_part2_title ||
         '第2部：分科会①／分科会②（15:00〜17:20）';
       const { card: card2, body: body2 } = createPartCard(part2Title);
 
-      // 分科会① = S-1◯ (Zは除外)
       const breakout1Rows = schedule.filter(r =>
         (r.session_id || '').startsWith('S-1') && !/-Z-/.test(r.session_id)
       );
@@ -955,14 +925,12 @@ window.addEventListener('load', clearScrollLock);
       sec1.append(grid1);
       body2.append(sec1);
 
-      // 休憩②（内側）
       const breakInner = createBreakBar(
         mapText.program_break2_label || '休憩（16:00〜16:20）'
       );
       breakInner.classList.add('program-break--inner');
       body2.append(breakInner);
 
-      // 分科会② = S-2◯ (Zは除外)
       const breakout2Rows = schedule.filter(r =>
         (r.session_id || '').startsWith('S-2') && !/-Z-/.test(r.session_id)
       );
@@ -996,30 +964,28 @@ window.addEventListener('load', clearScrollLock);
 
       BLOCKS.append(card2);
 
-      // 休憩③
+      // ---------- 休憩③ ----------
       BLOCKS.append(
         createBreakBar(mapText.program_break3_label || '休憩（17:20〜17:30）')
       );
 
-      // ===================================================================
-      // 第3部：全体懇親会
-      // ===================================================================
+      // ---------- 第3部 ----------
       const part3Title =
         mapText.program_part3_title || '第3部：全体懇親会（17:30〜19:00）';
       const { card: card3, body: body3 } = createPartCard(part3Title);
 
       const part3Row =
         schedule.find(r => (r.session_id || '').trim() === 'S-3') ||
-        schedule.find(r => /懇親会/.test((r.talk_title || r.title || '')));
+        schedule.find(r => /懇親会/.test(
+          (r.talk_title || r.title || '')
+        ));
 
-      // 時間
       const time3 = document.createElement('p');
       time3.className = 'program-part-time';
       time3.textContent =
         mapText.program_part3_time_range || '17:30〜19:00';
       body3.append(time3);
 
-      // 会場
       const trackText =
         (part3Row && part3Row.track) ||
         mapText.program_part3_track ||
