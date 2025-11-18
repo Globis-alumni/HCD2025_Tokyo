@@ -3,34 +3,30 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HCD2025 | HERO + ABOUT</title>
+  <title>HCD2025 | Homecoming Day 2025 Tokyo</title>
 
+  <!-- Google tag (gtag.js) | GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1TP5TB2YSY"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-1TP5TB2YSY');
+  </script>
+
+  <!-- CSS & ファビコン類 -->
   <link rel="stylesheet" href="./style.css" />
   <link rel="icon" sizes="32x32" href="./assets/hcd-favicon-32.png">
   <link rel="icon" sizes="16x16" href="./assets/hcd-favicon-16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/hcd-apple-touch-180.png">
+
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-  href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap"
-  rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap"
+    rel="stylesheet"
   />
-
-  <!-- デバッグ用ラベル（body があるか確認してから実行） -->
-  <script>
-    (function () {
-      document.documentElement.classList.remove('no-scroll');
-      if (document.body) {
-        document.body.classList.remove('no-scroll');
-      }
-      var b = document.createElement('div');
-      b.id = 'boot-flag';
-      b.style.cssText = 'position:fixed;top:8px;left:8px;z-index:99999;background:#2254d3;color:#fff;padding:4px 8px;border-radius:6px;font:700 12px/1.4 system-ui';
-      b.textContent = 'JS BOOT OK';
-      document.addEventListener('DOMContentLoaded', function(){ document.body.appendChild(b); });
-      window.addEventListener('load', function(){ setTimeout(function(){ b.remove(); }, 1500); });
-    })();
-  </script>
 </head>
 <body>
 <!-- ===== Header ===== -->
