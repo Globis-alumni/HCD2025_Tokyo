@@ -3,6 +3,19 @@
 // ---------- mini logger ----------
 const log = (...a) => console.debug('[HCD]', ...a);
 
+// ---------- GA4 event helper ----------
+const track = (eventName, params = {}) => {
+  try {
+    if (typeof gtag === 'function') {
+      gtag('event', eventName, params);
+    } else {
+      log('GA not ready', eventName, params);
+    }
+  } catch (e) {
+    log('GA track error', e);
+  }
+};
+
 // ---------- CSV utils ----------
 const csvToObjects = (text = "") => {
   const rows = [];
@@ -146,6 +159,15 @@ window.addEventListener('load', clearScrollLock);
       el.reg.textContent = mapText.btn_register || "Peatixで参加申込";
       el.reg.href        = mapText.peatix_url || "https://hcd-tokyo-2025.peatix.com/view";
 
+      // ★ Peatix ボタンクリックを計測
+      el.reg.addEventListener('click', () => {
+        track('peatix_click', {
+          link_url: el.reg.href,
+          position: 'hero',          // HEROからのクリック
+          page: location.pathname
+        });
+      });		
+		
       let icsLabel = mapText.btn_calendar_ics || "";
       if (!icsLabel) {
         icsLabel =
@@ -162,6 +184,14 @@ window.addEventListener('load', clearScrollLock);
         el.ics.href = icsUrl;
         // ダウンロード用ファイル名（任意）
         el.ics.download = icsUrl.split("/").pop();
+
+		// ★ ICS ダウンロード計測
+        el.ics.addEventListener('click', () => {
+          track('calendar_ics_download', {
+            file: el.ics.download || icsUrl,
+            page: location.pathname
+          });
+        });  
       } else {
         // どちらも設定できない場合はボタン非表示（保険）
         el.ics.style.display = "none";
@@ -477,50 +507,60 @@ window.addEventListener('load', clearScrollLock);
 
       GRID.innerHTML = ''; // フラットにカードを詰める
 
-      const createCard = (sp) => {
-        const card = document.createElement('article');
-        card.className = 'card ' + (KEYNOTE_IDS.has(sp.id) ? 'card--keynote' : 'card--std');
-        card.id = `speaker-${sp.id}`;
-        card.tabIndex = 0;
-        card.setAttribute('role', 'button');
-        card.setAttribute('aria-label', `${sp.name_jp || '登壇者'} のプロフィールを開く`);
+	  const createCard = (sp) => {
+      const card = document.createElement('article');
+      card.className = 'card ' + (KEYNOTE_IDS.has(sp.id) ? 'card--keynote' : 'card--std');
+      card.id = `speaker-${sp.id}`;
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-label', `${sp.name_jp || '登壇者'} のプロフィールを開く`);
 
-        const imgWrap = document.createElement('div');
-        imgWrap.className = 'card__photo-wrap';
-        const img = document.createElement('img');
-        img.className = 'card__photo';
-        setPhoto(img, sp.photo_file || sp.photo_url);
-        img.alt = sp.name_jp || '';
-        imgWrap.appendChild(img);
+      const imgWrap = document.createElement('div');
+      imgWrap.className = 'card__photo-wrap';
+      const img = document.createElement('img');
+      img.className = 'card__photo';
+      setPhoto(img, sp.photo_file || sp.photo_url);
+      img.alt = sp.name_jp || '';
+      imgWrap.appendChild(img);
 
-        const body = document.createElement('div');
-        body.className = 'card__body';
-        const nm = document.createElement('h3');
-        nm.className = 'card__name';
-        nm.textContent = sp.name_jp || '';
-        const cta = document.createElement('button');
-        cta.type = 'button';
-        cta.className = 'card__cta';
-        cta.textContent = '詳しく見る';
-        body.append(nm, cta);
+      const body = document.createElement('div');
+      body.className = 'card__body';
+      const nm = document.createElement('h3');
+      nm.className = 'card__name';
+      nm.textContent = sp.name_jp || '';
+      const cta = document.createElement('button');
+      cta.type = 'button';
+      cta.className = 'card__cta';
+      cta.textContent = '詳しく見る';
+      body.append(nm, cta);
 
-        card.append(imgWrap, body);
+      card.append(imgWrap, body);
 
-        const handleOpen = () => openModal(sp);
-        card.addEventListener('click', handleOpen);
-        card.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            handleOpen();
-          }
-        });
-        cta.addEventListener('click', (e) => {
-          e.stopPropagation();
-          handleOpen();
-        });
+  // ★ ここで GA4 イベントを飛ばしてからモーダルを開く
+       const handleOpen = () => {
+        track('speaker_modal_open', {
+        speaker_id: sp.id,
+        speaker_name: sp.name_jp || '',
+        speaker_affiliation: sp.affiliation || '',
+        page: location.pathname
+    });
+    openModal(sp);
+  };
 
-        return card;
-      };
+      card.addEventListener('click', handleOpen);
+      card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleOpen();
+    }
+  });
+      cta.addEventListener('click', (e) => {
+       e.stopPropagation();
+      handleOpen();
+  });
+
+  return card;
+};
 
       ordered.forEach(sp => {
         if (!sp) return;
@@ -1066,6 +1106,14 @@ window.addEventListener('load', clearScrollLock);
           aWrap.hidden = !willOpen;              // true → false で表示
           card.classList.toggle('is-open', willOpen);
           icon.textContent = willOpen ? '－' : '＋';
+　　　　 // ★ 開いたときだけ計測
+          if (willOpen) {
+            track('faq_open', {
+              faq_index: i,
+              faq_question: q,
+              page: location.pathname
+            });
+          }
         });
 
         card.append(qBtn, aWrap);
