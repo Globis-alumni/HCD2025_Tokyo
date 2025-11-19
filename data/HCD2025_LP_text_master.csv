@@ -37,6 +37,7 @@ faq,a,faq_a8,"二次会懇親会をスパイスHUB 六番町店にて実施す�
 access,section_title,access_title,アクセス,,Access,
 access,address,access_address,グロービス経営大学院 東京校,,GLOBIS University Tokyo Campus,
 footer,credit,footer_credit,運営：G会 東京校 幹事団,,Organized by: Alumni Network (Tokyo),太字・サイズ大きめで表示
+footer,link,footer_link,【公式】東京校G会（グロービス卒業生の会）,,,facebookグループページリンク
 meta,description,meta_desc,グロービス経営大学院 ホームカミングデー2025｜卒業生がつながり、学び、次の一歩を見つける日。,,,SEOメタ説明
 schedule,label,program_section_title,全体スケジュール,,Breakout 1,同時並行ブロック1の見出し
 schedule,label,program_part1_title,第1部：オープニング＆全体講演,,Breakout 2,同時並行ブロック2の見出し
@@ -53,6 +54,7 @@ schedule,label,program_legend_networking,全体懇親会（東京校参加者の
 register,cta_primary,btn_register,Peatixで申込,,Register on Peatix,https://hcd-tokyo-2025.peatix.com/view
 
 register,cta_secondary,btn_calendar,カレンダーに追加(.ics),,Add to Calendar,カレンダーに追加(.ics)
+
 
 
 
