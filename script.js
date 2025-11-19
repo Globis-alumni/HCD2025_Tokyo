@@ -135,79 +135,120 @@ window.addEventListener('load', clearScrollLock);
       ? t.replace(/(言葉、? *整う。)\s*/u, "$1<br>")
       : t.replace(/\s*<br>\s*/g, "");
 
-  const injectMobileBreakTitle = (s = "") =>
-    s.replace(/\s*(\d{4})\s*$/, '<span class="br-sp"></span>$1');
-
   const injectMobileBreakMeta = (s = "") =>
     s.replace(/(\s+)(\d{1,2}\/\d{1,2}.*)$/u, '$1<span class="br-sp"></span>$2');
+
+  // ▼ HEROタイトルをデバイス別に整形
+  const formatHeroTitle = (s = "") => {
+    const base = (s || "").replace(/\s+/g, " ").trim();
+    const isSP = window.matchMedia("(max-width: 425px)").matches;
+
+    if (!isSP) {
+      // PC / タブレットはそのまま
+      return base;
+    }
+
+    // スマホ時だけ「東京校」「ホームカミングデー」「2025」に分解して改行
+    let txt = base;
+    const yearMatch = txt.match(/(20\d{2})/);
+    let year = "";
+    if (yearMatch) {
+      year = yearMatch[1];
+      txt = txt.replace(year, "").trim();
+    }
+
+    let campus = "";
+    let main = txt;
+    if (txt.startsWith("東京校")) {
+      campus = "東京校";
+      main = txt.replace(/^東京校\s*/, "").trim();
+    }
+
+    const lines = [campus, main, year].filter(Boolean);
+    return lines.join("<br>");
+  };
 
   (async () => {
     try {
       const { mapText, allVals } = await loadTextMaps();
 
-      el.title.innerHTML =
-        injectMobileBreakTitle(mapText.hero_title_jp || "ホームカミングデー 2025");
+      const heroTitleRaw =
+        mapText.hero_title_jp || "東京校 ホームカミングデー 2025";
+
+      // ★ タイトル反映
+      const applyHeroTitle = () => {
+        el.title.innerHTML = formatHeroTitle(heroTitleRaw);
+      };
+      applyHeroTitle();
 
       el.meta.innerHTML =
-        injectMobileBreakMeta(mapText.hero_meta || "東京校 ／ オンライン ハイブリッド開催 12/14 13:00start");
+        injectMobileBreakMeta(
+          mapText.hero_meta ||
+            "東京校 ／ オンライン ハイブリッド開催 12/14 13:00start"
+        );
 
       const rawTag =
         mapText.hero_tagline ||
         "選択肢、増える。 言葉、整う。 足が、前に出る。 そんな日。";
       el.tag.innerHTML = applyTaglineBreak(rawTag);
 
-      el.reg.textContent = mapText.btn_register || "Peatixで参加申込";
-      el.reg.href        = mapText.peatix_url || "https://hcd-tokyo-2025.peatix.com/view";
+      el.reg.textContent =
+        mapText.btn_register || "Peatixで参加申込";
+      el.reg.href =
+        mapText.peatix_url || "https://hcd-tokyo-2025.peatix.com/view";
 
       // ★ Peatix ボタンクリックを計測
-      el.reg.addEventListener('click', () => {
-        track('peatix_click', {
+      el.reg.addEventListener("click", () => {
+        track("peatix_click", {
           link_url: el.reg.href,
-          position: 'hero',          // HEROからのクリック
-          page: location.pathname
+          position: "hero",
+          page: location.pathname,
         });
-      });		
-		
+      });
+
       let icsLabel = mapText.btn_calendar_ics || "";
       if (!icsLabel) {
         icsLabel =
-          allVals.find(v => /ics/i.test(v) || /カレンダー.*追加/u.test(v)) ||
-          "カレンダーに追加(.ics)";
+          allVals.find(
+            (v) => /ics/i.test(v) || /カレンダー.*追加/u.test(v)
+          ) || "カレンダーに追加(.ics)";
       }
       el.ics.textContent = icsLabel;
 
-      // ★ ここでURLを決定：CSV優先、なければデフォルトパス
+      // CSVのURLがあれば優先、なければデフォルトのICSファイル
       const csvIcsUrl = (mapText.calendar_ics_url || "").trim();
       const icsUrl = csvIcsUrl || DEFAULT_ICS_URL;
 
       if (icsUrl) {
         el.ics.href = icsUrl;
-        // ダウンロード用ファイル名（任意）
         el.ics.download = icsUrl.split("/").pop();
 
-		// ★ ICS ダウンロード計測
-        el.ics.addEventListener('click', () => {
-          track('calendar_ics_download', {
+        // ★ ICS ダウンロード計測
+        el.ics.addEventListener("click", () => {
+          track("calendar_ics_download", {
             file: el.ics.download || icsUrl,
-            page: location.pathname
+            page: location.pathname,
           });
-        });  
+        });
       } else {
-        // どちらも設定できない場合はボタン非表示（保険）
         el.ics.style.display = "none";
       }
 
+      // 画面サイズ変更時にタイトル/タグラインを再整形
       window.addEventListener(
         "resize",
-        () => { el.tag.innerHTML = applyTaglineBreak(rawTag); },
+        () => {
+          el.tag.innerHTML = applyTaglineBreak(rawTag);
+          applyHeroTitle();
+        },
         { passive: true }
       );
     } catch (e) {
-      log('HERO error', e);
+      log("HERO error", e);
     }
   })();
 })();
-
+	  
 // =============================================================================================
 // ABOUT
 // =============================================================================================
@@ -591,8 +632,106 @@ window.addEventListener('load', clearScrollLock);
     return def;
   };
 
-  const SESSION_NUM = ['①','②','③','④','⑤','⑥'];
+const SESSION_NUM = ['①','②','③','④','⑤','⑥'];
 
+// ▼ 追加：分科会見出しをモバイルだけ改行
+const formatBreakoutTitle = (s = "") => {
+  const base = String(s || "").replace(/\s+/g, " ").trim();
+  const isSP = window.matchMedia("(max-width: 425px)").matches;
+  if (!isSP) return base;  // PC/タブレットはそのまま
+
+  if (base.startsWith("分科会①")) {
+    return "分科会①（講演／ワークショップ）<br>15:00〜16:00";
+  }
+  if (base.startsWith("分科会②")) {
+    return "分科会②（講演／ワークショップ）<br>16:20〜17:20";
+  }
+  return base;
+};	
+	
+// ▼ モバイル専用の改行ルール
+const MOBILE_TITLE_RULES = [
+  {
+    match: (t) => t.includes("分科会①（講演／ワークショップ）15:00〜16:00"),
+    html: "分科会①（講演／ワークショップ）<br>15:00〜16:00"
+  },
+  {
+    match: (t) => t.includes("分科会②（講演／ワークショップ）16:20〜17:20"),
+    html: "分科会②（講演／ワークショップ）<br>16:20〜17:20"
+  },	
+  {
+    match: (t) => t.includes("孤独なき『個の時代』"),
+    html: "孤独なき『個の時代』の生存戦略<br>～自己変態理論とは～"
+  },
+  {
+    match: (t) => t.includes("マーケティングが導く企業変革"),
+    html: "マーケティングが導く企業変革<br>〜成長と革新のための戦略〜<br>※東京校参加者限定"
+  },
+  {
+    match: (t) => t.includes("GRAが15年で築いた"),
+    html: "GRAが15年で築いた<br>『社会課題解決型』<br>ローカルスタートアップの軌跡"
+  },
+  {
+    match: (t) => t.includes("チームビルディングが一気に進む"),
+    html: "組織における<br>チームビルディングが<br>一気に進む！<br>「エンゲージメントカード」<br>実践セッション"
+  },
+  {
+    match: (t) => t.includes("速読×時間術で週3日で"),
+    html: "【速読×時間術で週3日で<br>1,000万達成！！】<br>「時間と場所に縛られない」<br>パラレルキャリアの創り方"
+  },
+  {
+    match: (t) => t.includes("夢を仕組みに変える！"),
+    html: "夢を仕組みに変える！<br>〜マクアケ代表 木内氏が語る<br>ゼロからIPO<br>そしてその先への挑戦の軌跡〜"
+  },
+  {
+    match: (t) => t.includes("新規事業立ち上げ」実践論"),
+    html: "【挑戦の熱量を成果に変える】<br>「新規事業立ち上げ」実践論：<br>壁を乗り越え事業創造を駆動する<br>イントレプレナーの実行力と志"
+  },
+  {
+    match: (t) => t.includes("応援される人になるための印象管理"),
+    html: "応援される人になるための<br>印象管理～より良い<br>リレーショナルパワーの築き方～"
+  },
+  {
+    match: (t) => t.includes("『デキる』リーダーが知るべき"),
+    html: "『デキる』リーダーが知るべき、<br>『気遣い』と『ハラスメント』の<br>境界線<br>"
+  }
+];
+
+// ▼ セッションタイトル整形（PCとモバイルで出し分け）
+const formatSessionTitle = (title, isIto) => {
+  const base = String(title || "");
+  const isMobile =
+    typeof window !== "undefined" &&
+    window.matchMedia &&
+    window.matchMedia("(max-width: 599px)").matches;
+
+  // PC / タブレット：そのまま（改行コードはスペースに）
+  if (!isMobile) {
+    let text = base.replace(/\r?\n/g, " ");
+    if (isIto && !text.includes("※東京校参加者限定")) {
+      text += " ※東京校参加者限定";
+    }
+    return text;
+  }
+
+  // モバイル：指定ルールで強制改行
+  for (const rule of MOBILE_TITLE_RULES) {
+    if (rule.match(base)) {
+      let html = rule.html;
+      if (isIto && !html.includes("※東京校参加者限定")) {
+        html += "<br>※東京校参加者限定";
+      }
+      return html;
+    }
+  }
+
+  // マッチしないものは、改行コードだけ <br> にして返す
+  let html = base.replace(/\r?\n/g, "<br>");
+  if (isIto && !html.includes("※東京校参加者限定")) {
+    html += "<br>※東京校参加者限定";
+  }
+  return html;
+};
   const createBreakBar = (label) => {
     const bar = document.createElement('div');
     bar.className = 'program-break';
@@ -661,14 +800,12 @@ window.addEventListener('load', clearScrollLock);
       (sessionTitleFromSpeakers && sessionTitleFromSpeakers.trim()) ||
       labelFromMap;
 
-    if (sessionTitle) {
+        if (sessionTitle) {
       const titleEl = document.createElement('div');
       titleEl.className = 'program-session-card__title';
 
       const isIto = speakers.some(sp => sp.name_jp === '伊藤浩孝');
-      titleEl.textContent = isIto
-        ? `${sessionTitle}　※東京校参加者限定`
-        : sessionTitle;
+      titleEl.innerHTML = formatSessionTitle(sessionTitle, isIto);
 
       card.append(titleEl);
     }
@@ -887,12 +1024,11 @@ window.addEventListener('load', clearScrollLock);
           '';
 
         if (keynoteTitle) {
-          const st = document.createElement('p');
-          st.className = 'program-session-main-title';
-          st.textContent = keynoteTitle;
-          body1.append(st);
-        }
-
+        const st = document.createElement('p');
+        st.className = 'program-session-main-title';
+        st.innerHTML = formatSessionTitle(keynoteTitle, false);
+        body1.append(st);
+    }
         const grid = document.createElement('div');
         grid.className = 'program-speaker-grid';
 
@@ -934,6 +1070,15 @@ window.addEventListener('load', clearScrollLock);
         '第2部：分科会①／分科会②（15:00〜17:20）';
       const { card: card2, body: body2 } = createPartCard(part2Title);
 
+      card2.classList.add('program-card--part2');
+
+      const breakoutTitle1 =
+        mapText.program_legend_breakout_part1 ||
+        '分科会①（講演／ワークショップ） 15:00〜16:00';
+      const breakoutTitle2 =
+        mapText.program_legend_breakout_part2 ||
+        '分科会②（講演／ワークショップ） 16:20〜17:20';
+
       const breakout1Rows = schedule.filter(r =>
         (r.session_id || '').startsWith('S-1') && !/-Z-/.test(r.session_id)
       );
@@ -943,9 +1088,6 @@ window.addEventListener('load', clearScrollLock);
 
       const h1 = document.createElement('h4');
       h1.className = 'program-breakout__title';
-      h1.textContent =
-        mapText.program_legend_breakout_part1 ||
-        '分科会①（講演／ワークショップ） 15:00〜16:00';
       sec1.append(h1);
 
       const grid1 = document.createElement('div');
@@ -980,9 +1122,6 @@ window.addEventListener('load', clearScrollLock);
 
       const h2 = document.createElement('h4');
       h2.className = 'program-breakout__title';
-      h2.textContent =
-        mapText.program_legend_breakout_part2 ||
-        '分科会②（講演／ワークショップ） 16:20〜17:20';
       sec2.append(h2);
 
       const grid2 = document.createElement('div');
@@ -1001,6 +1140,16 @@ window.addEventListener('load', clearScrollLock);
 
       sec2.append(grid2);
       body2.append(sec2);
+
+      // ★ ここで「今のウィンドウ幅」に応じてタイトルをセットし、
+      //   resize 時にも呼び直す
+      const applyBreakoutTitles = () => {
+        h1.innerHTML = formatBreakoutTitle(breakoutTitle1);
+        h2.innerHTML = formatBreakoutTitle(breakoutTitle2);
+      };
+      applyBreakoutTitles();
+
+      window.addEventListener('resize', applyBreakoutTitles, { passive: true });
 
       BLOCKS.append(card2);
 
