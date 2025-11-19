@@ -20,7 +20,7 @@ register,cta_secondary,btn_calendar,カレンダーに追加(.ics),,Add to Calen
 faq,section_title,faq_title,よくある質問,,FAQ,
 faq,q,faq_q1,参加できる条件は、何ですか？,,,
 faq,a,faq_a1,パートタイムMBA、フルタイムMBA全ての卒業生であればどなたでもご参加いただけます。なおイベントは他言語への通訳等はございません。予めご了承ください。,,,
-faq,q,faq_q2,参加したい場合は、どうするのですか？,,,
+faq,q,faq_q2,参加したい場合は、どうすれば？,,,
 faq,a,faq_a2,ご参加されたい場合は、このサイトにあるPeatixへのリンクボタンにてお申込みください。,,,
 faq,q,faq_q3,途中の参加・退出はできますか？,,,
 faq,a,faq_a3,東京校での現地参加、オンライン参加どちらも途中の入退室は可能です。お気軽にご参加ください。,,,
@@ -53,5 +53,6 @@ schedule,label,program_legend_networking,全体懇親会（東京校参加者の
 register,cta_primary,btn_register,Peatixで申込,,Register on Peatix,https://hcd-tokyo-2025.peatix.com/view
 
 register,cta_secondary,btn_calendar,カレンダーに追加(.ics),,Add to Calendar,カレンダーに追加(.ics)
+
 
 
