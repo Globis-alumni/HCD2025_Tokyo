@@ -1,5 +1,5 @@
 section,element,key,ja_text,ja_lead,en_text,note
-hero,title_main,hero_title_jp,ホームカミングデー 2025東京,,Homecoming Day 2025,日本語が主、英字はサブでグレー表示
+hero,title_main,hero_title_jp,東京校 ホームカミングデー2025,,Homecoming Day 2025,日本語が主、英字はサブでグレー表示
 hero,tagline,hero_tagline,選択肢、増える。言葉、整う。足が、前に出る。そんな日。,,Gather. Connect. Move forward.,キャッチコピー
 hero,meta,hero_meta,東京校 ／ オンライン ハイブリッド開催　12/14 13:00 start,,Tokyo Campus,日付・場所
 hero,cta_primary,btn_register,Peatixで申込,,Register on Peatix,https://hcd-tokyo-2025.peatix.com/view
@@ -53,3 +53,4 @@ schedule,label,program_legend_networking,全体懇親会（東京校参加者の
 register,cta_primary,btn_register,Peatixで申込,,Register on Peatix,https://hcd-tokyo-2025.peatix.com/view
 
 register,cta_secondary,btn_calendar,カレンダーに追加(.ics),,Add to Calendar,カレンダーに追加(.ics)
+
