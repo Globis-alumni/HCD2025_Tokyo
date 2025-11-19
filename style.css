@@ -529,18 +529,36 @@ html, body {
 }
 
 /* 各「第◯部」のカード */
-.program-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 28px rgba(0,0,0,.04);
-  padding: 20px 22px 22px;
-  border: 1px solid #e5e8f4;
+.program-card__head {
+  margin: 0 0 14px;
+  text-align: center;
+  font-weight: 750;
+  font-size: clamp(18px, 2.2vw, 24px);
 }
 .program-card__head {
   margin: 0 0 14px;
   text-align: center;
   font-weight: 750;
   font-size: clamp(18px, 2.2vw, 24px);
+}
+
+/* ▼ 第2部カードのヘッダー＋時間ブロック（上部）を縦中央揃えにする */
+.program-card--part2 .program-card__head,
+.program-card--part2 .program-part-time {
+  text-align: center;
+}
+
+.program-card--part2 .program-card__head {
+  margin-bottom: 6px;
+}
+
+.program-card--part2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;  /* ★ここで縦中央揃え */
+  padding-top: 28px;       /* 微調整：上の余白 */
+  padding-bottom: 28px;    /* 微調整：下の余白 */
 }
 .program-card__body {
   display: grid;
@@ -671,15 +689,24 @@ html, body {
   }
 }
 
-/* セッションカード本体（分科会のカード） */
+/* セッションカードの中身を天地中央に */
 .program-session-card {
   background: rgba(34,84,211,.03);
   border-radius: 4px;
   border: 1.5px solid rgba(34,84,211,.25);
   padding: 14px 16px 12px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 6px;
+  min-height: 220px;
+  justify-content: center;   /* ★ここを追加：天地中央 */
 }
+@media (max-width: 600px) {
+  .program-session-card {
+    min-height: 200px;
+  }
+}
+
 .program-session-card__header,
 .program-session-card__title,
 .program-session-card__track,
@@ -689,7 +716,7 @@ html, body {
 .program-session-card__session-label {
   font-weight: 800;
   margin-bottom: 4px;
-  font-size: 12px;
+  font-size: 15px;
 }
 .program-session-card__title {
   font-size: 13px;
@@ -844,6 +871,7 @@ html, body {
   max-width: 900px;
   margin: 0 auto;
   display: flex;
+  flex-direction: column;   /* ★ 追加：上下に積む */
   justify-content: center;
   align-items: center;
   gap: 12px;
@@ -865,6 +893,57 @@ html, body {
   }
   .site-footer__text {
     font-size: 0.9rem;
+  }
+}
+
+.site-footer__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.site-footer__fb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1877f2;          /* Facebookブルー。気になる場合は var(--blue) でもOK */
+}
+
+.site-footer__fb:hover {
+  text-decoration: underline;
+}
+
+.site-footer__fb-logo {
+  width: 24px;
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .site-footer__logo {
+    width: 44px;
+  }
+  .site-footer__text {
+    font-size: 0.9rem;
+  }
+  .site-footer__row {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+.site-footer__fb span {
+  text-align: center;   /* テキスト中央寄せ */
+}
+
+/* ▼ モバイルだけロゴの下にテキストを縦並び＋小さい文字に */
+@media (max-width: 480px) {
+  .site-footer__fb {
+    flex-direction: column;   /* ここで 1 行組 → 2 行組 */
+    font-size: 0.7rem;        /* ★ フォントサイズ：ここをお好みで調整してください */
   }
 }
 
@@ -1043,4 +1122,27 @@ html, body {
 .faq-card__answer p {
   font-family: var(--font-base);
   font-weight: 400;
+}
+
+@media (max-width:425px) {
+  .hero { min-height:86vh; }
+  :root { --cta-btn-w: clamp(200px,82vw,260px); }
+  .cta-row { gap:8px; }
+  .br-sp { display:block; }
+  .hero-band { justify-items:center; }
+  .hero-row--title { 
+    justify-content:center; 
+    /* ▼ここから追加 */
+    grid-auto-flow: row;      /* ロゴ → タイトルを縦並びに */
+    justify-items: center;
+  }
+  .hero-title {
+    text-align: center;       /* 3行とも中央寄せ */
+  }
+  .hero-meta {
+    text-align:center;
+    justify-self:center;
+  }
+  .hero-tagline { margin-bottom:4px; }
+  .cta { margin-block:-8px 12px; }
 }
