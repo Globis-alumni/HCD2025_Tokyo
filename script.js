@@ -1316,3 +1316,19 @@ const formatSessionTitle = (title, isIto) => {
     });
   });
 })();
+
+// =============================================================================================
+// FOOTER：Facebookリンクのクリック計測
+// =============================================================================================
+(() => {
+  const fbLink = document.querySelector('.site-footer__fb');
+  if (!fbLink) return;
+
+  fbLink.addEventListener('click', () => {
+    track('footer_facebook_click', {
+      link_url: fbLink.href,
+      position: 'footer',
+      page: location.pathname
+    });
+  });
+})();
