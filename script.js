@@ -1213,7 +1213,7 @@ const formatSessionTitle = (title, isIto) => {
       }
 
       // Q1〜Q8 を順番に生成
-      for (let i = 1; i <= 8; i++) {
+      for (let i = 1; i <= 15; i++) {
         const qKey = `faq_q${i}`;
         const aKey = `faq_a${i}`;
 
