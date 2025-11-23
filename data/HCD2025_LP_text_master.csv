@@ -30,10 +30,12 @@ faq,q,faq_q5,抽選はどのような形ですか？,,,
 faq,a,faq_a5,二期に分けて抽選にて決定をさせていただきます。第1次お申込みの期限は、11/22（土）23:59（抽選発表は、11/25（火）を予定しています。）、第2次お申込みの期限は、12/6（土）23:59（抽選発表は、12/9（火）を予定しています。）なお、第２次のお申込は、第1次で定員に達してない分科会のみとなります。また以降の受付は、当日空きのある分科会のみ選択となります。,,,
 faq,q,faq_q6,無料のイベントですか？,,,
 faq,a,faq_a6,"有料のイベントになっており、1,000円（消費税込）です。東京校ご参加の場合は、全体懇親会の軽食付きになっています。",,,
-faq,q,faq_q7,撮影は可能ですか？,,,
-faq,a,faq_a7,一部セッションは撮影不可の場合があります。当日の案内に従ってください。,,,
-faq,q,faq_q8,終了後の懇親会は、ありますか？,,,
-faq,a,faq_a8,"二次会懇親会をスパイスHUB 六番町店にて実施する予定です（19:00～21:00  会費 3,500円を予定しています。）。Peatixの申込時に伺いますのでご回答ください。",,,
+faq,q,faq_q7,申込をキャンセルする場合は？,,,
+faq,a,faq_a7,"Peatixのマイチケットから、主催者へ連絡をしてください。主催者側でキャンセル対応をいたします。なお、12/7まではキャンセル料がかかりません。それ以降は発生しますので予めご了承ください。",,,
+faq,q,faq_q8,撮影は可能ですか？,,,
+faq,a,faq_a8,一部セッションは撮影不可の場合があります。当日の案内に従ってください。,,,
+faq,q,faq_q9,終了後の懇親会は、ありますか？,,,
+faq,a,faq_a9,"二次会懇親会をスパイスHUB 六番町店にて実施する予定です（19:00～21:00  会費 3,500円を予定しています。）。Peatixの申込時に伺いますのでご回答ください。",,,
 access,section_title,access_title,アクセス,,Access,
 access,address,access_address,グロービス経営大学院 東京校,,GLOBIS University Tokyo Campus,
 footer,credit,footer_credit,運営：G会 東京校 幹事団,,Organized by: Alumni Network (Tokyo),太字・サイズ大きめで表示
@@ -54,6 +56,7 @@ schedule,label,program_legend_networking,全体懇親会（東京校参加者の
 register,cta_primary,btn_register,Peatixで申込,,Register on Peatix,https://hcd-tokyo-2025.peatix.com/view
 
 register,cta_secondary,btn_calendar,カレンダーに追加(.ics),,Add to Calendar,カレンダーに追加(.ics)
+
 
 
 
