@@ -750,6 +750,28 @@ html, body {
   margin-top: 2px;
 }
 
+.program-session-card__tags {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;  /* 中央揃え */
+}
+
+.program-session-card__tag-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(34,84,211,.35);
+  background: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  color: #2254d3;
+  box-sizing: border-box;
+}
+
 /* スマホで少し余白を詰める */
 @media (max-width: 639px) {
   .program-card {
@@ -1084,7 +1106,8 @@ html, body {
 .program,
 .speakers,
 .faq-section,
-.access-section {
+.access-section,
+.notice-section{
   padding-top: 40px;
   padding-bottom: 40px;
 }
@@ -1104,7 +1127,8 @@ html, body {
 .program-title,
 .speakers-title,
 .faq-title,
-.access-title {
+.access-title,
+.notice-section{
   font-family: var(--font-round);
   font-weight: 700;
 }
@@ -1145,4 +1169,232 @@ html, body {
   }
   .hero-tagline { margin-bottom:4px; }
   .cta { margin-block:-8px 12px; }
+}
+
+
+/* ===== HERO notice badge (タグラインの下の赤帯) ===== */
+.hero-notice {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 14px;
+  border-radius: 15px;
+  background: #ff2424;      /* 赤帯 */
+  color: #ffffff;
+  font-size: 0.8rem;        /* ★ PC / タブレット用 */
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+}
+
+.hero-notice:hover {
+  opacity: 0.9;
+}
+
+/* ▼ スマホ幅だけ、HERO無料化告知のフォントを少し小さく＆詰める */
+@media (max-width: 480px) {
+  .hero-notice {
+    font-size: 0.64rem;      /* ★ スマホだけ小さくする */
+    line-height: 1.4;
+    padding: 4px 8px;       /* それに合わせてパディングも微調整 */
+  }
+}
+
+.hero-notice:hover {
+  opacity: 0.9;
+}
+
+/* ▼ スマホ幅（425px以下）専用：タグラインと無料化バナーの余白調整 */
+@media (max-width: 425px) {
+
+  /* タグライン（選択肢、増える〜）の余白調整 */
+  .hero-tagline {
+    margin-top: 8px;      /* 上を少し詰める */
+    margin-bottom: 4px;   /* 下を少し詰める */
+    line-height: 1.35;    /* 行間も少しだけ詰める */
+  }
+
+  /* 無料化バナー（赤帯）の余白調整 */
+  .hero-notice {
+    margin-top: 6px;      /* タグラインとの距離を縮める or 広げる */
+    margin-bottom: 10px;  /* CTAとの距離。必要に応じて調整可能 */
+    padding: 4px 10px;    /* 高さを小さく見せたい場合 */
+    font-size: 0.64rem;   /* 文字小さめ */
+    line-height: 1.25;
+  }
+
+}
+
+/* ===== Notice section (参加費変更のお知らせ) ===== */
+.notice-section {
+  padding: 40px 16px;
+  background: #fff7ff;
+  border-top: 1px solid #f8d7da;
+  border-bottom: 1px solid #f8d7da;
+  scroll-margin-top: 80px;   /* アンカーで飛んだとき隠れないように */
+}
+
+.notice-wrap {
+  width: min(92vw, 980px);
+  margin: 0 auto;
+  display: grid;
+  gap: 20px;
+}
+
+/* セクションタイトル：画面中央 */
+.notice-title {
+  margin: 0;
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  text-align: center;
+}
+
+.notice-lead {
+  margin: 0 auto;
+  max-width: 800px;
+  font-size: clamp(14px, 2.4vw, 15px);
+  line-height: 1.8;
+  text-align: center;
+}
+
+.notice-body {
+  font-size: 0.75rem;
+  line-height: 1.8;
+  font-weight: 400;
+  text-align: center;
+  margin: 0px auto 14px;
+  max-width: 800px;
+}
+
+/* 変更前／変更後の比較 */
+.notice-change {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #f5c6cb;
+  padding: 12px 16px;
+}
+
+.notice-change__title {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.notice-change__list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+.notice-change__list li {
+  margin-bottom: 2px;
+}
+
+/* ▼ タブレット以上でフォントサイズを可変で少し大きく */
+@media (min-width: 600px) {
+  .notice-change__list {
+    font-size: clamp(1.10rem, 1.2vw, 1.20rem);
+  }
+}
+
+/* 変更後だけ赤字＆少し強調 */
+.notice-change__after {
+  color: #c62828;
+  font-weight: 700;
+}
+
+/* 告知セクション内FAQ */
+.notice-faq {
+  margin-top: 8px;
+}
+
+/* ★ ここを追加：『参加費変更に伴うよくあるご質問』を中央寄せ */
+.notice-faq__title {
+  margin: 28px 0 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.notice-faq-category {
+  margin-top: 16px;
+}
+
+.notice-faq-category-title {
+  margin: 8px 0;
+  font-size: 0.95rem;
+  font-weight: 550;
+  text-align: center;   /* 左寄せ or 中央寄せ、お好みで */
+}
+
+.notice-faq-category-list {
+  display: grid;
+  gap: 8px;
+}
+
+/* ▼ Notice 詳細の開閉トグルボタン */
+.notice-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin: 2px auto 2px;
+  padding: 6px 12px;
+  border-radius: 15px;
+  border: 1px solid #f5c6cb;
+  background: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #c62828;
+}
+
+.notice-toggle-icon {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+/* 開いているときは矢印を反転 */
+.notice-toggle.is-open .notice-toggle-icon {
+  transform: rotate(180deg);
+}
+
+/* ▼ 詳細ブロック（デフォルトで折りたたみ） */
+.notice-detail {
+  margin-top: 12px;
+}
+
+.notice-detail.is-collapsed {
+  display: none;
+}
+
+/* ▼ スマホ幅だけ、Notice内の文字サイズを少し下げる */
+@media (max-width: 480px) {
+  /* リード（多数の方から参加申込を〜 のブロック） */
+  .notice-lead {
+    font-size: 0.92rem;    /* 元より一段小さく */
+    line-height: 1.7;
+  }
+
+  /* 本文（notice_body） */
+  .notice-body {
+    font-size: 0.55rem;    /* ここも少し絞る */
+    line-height: 1.7;
+  }
+
+  /* ケース別タイトル
+     〜 オンライン申込を既にされている方向け 〜
+     〜 東京校での参加を既に申し込まれている方向け 〜 など */
+  .notice-faq-category-title {
+    font-size: 0.75rem;
+  }
+}
+
+/* 既存の .faq-card 系スタイルをそのまま再利用 */
+
+@media (max-width: 600px) {
+  .notice-section {
+    padding: 28px 14px;
+  }
 }
