@@ -124,6 +124,7 @@ window.addEventListener('load', clearScrollLock);
     tag  : document.getElementById("hero-tagline"),
     reg  : document.getElementById("btn-register"),
     ics  : document.getElementById("btn-cal-ics"),
+	notice: document.getElementById("hero-notice-link"),   // ★ 追加
   };
   if (!el.title || !el.meta || !el.tag) return;
 
@@ -171,6 +172,14 @@ window.addEventListener('load', clearScrollLock);
   (async () => {
     try {
       const { mapText, allVals } = await loadTextMaps();
+	
+	  // HERO下の「重要なお知らせ」バッジの文言
+      if (el.notice) {
+        const noticeText =
+          (mapText.hero_notice || '').trim() ||
+          '＜重要なお知らせ＞オンライン参加 無料化について';
+        el.notice.textContent = noticeText;
+      }
 
       const heroTitleRaw =
         mapText.hero_title_jp || "東京校 ホームカミングデー 2025";
@@ -665,7 +674,7 @@ const MOBILE_TITLE_RULES = [
   },
   {
     match: (t) => t.includes("マーケティングが導く企業変革"),
-    html: "マーケティングが導く企業変革<br>〜成長と革新のための戦略〜<br>※東京校参加者限定"
+    html: "マーケティングが導く企業変革<br>〜成長と革新のための戦略〜"
   },
   {
     match: (t) => t.includes("GRAが15年で築いた"),
@@ -697,41 +706,33 @@ const MOBILE_TITLE_RULES = [
   }
 ];
 
-// ▼ セッションタイトル整形（PCとモバイルで出し分け）
-const formatSessionTitle = (title, isIto) => {
+// 変更後
+  const formatSessionTitle = (title) => {
   const base = String(title || "");
   const isMobile =
     typeof window !== "undefined" &&
     window.matchMedia &&
     window.matchMedia("(max-width: 599px)").matches;
 
-  // PC / タブレット：そのまま（改行コードはスペースに）
   if (!isMobile) {
+    // PC / タブレット：改行コードだけスペースに
     let text = base.replace(/\r?\n/g, " ");
-    if (isIto && !text.includes("※東京校参加者限定")) {
-      text += " ※東京校参加者限定";
-    }
     return text;
   }
 
-  // モバイル：指定ルールで強制改行
+  // モバイル：既存の MOBILE_TITLE_RULES だけで分割
   for (const rule of MOBILE_TITLE_RULES) {
     if (rule.match(base)) {
       let html = rule.html;
-      if (isIto && !html.includes("※東京校参加者限定")) {
-        html += "<br>※東京校参加者限定";
-      }
       return html;
     }
   }
 
-  // マッチしないものは、改行コードだけ <br> にして返す
+  // マッチしないものは、改行コードだけ <br> に
   let html = base.replace(/\r?\n/g, "<br>");
-  if (isIto && !html.includes("※東京校参加者限定")) {
-    html += "<br>※東京校参加者限定";
-  }
   return html;
 };
+	
   const createBreakBar = (label) => {
     const bar = document.createElement('div');
     bar.className = 'program-break';
@@ -804,9 +805,8 @@ const formatSessionTitle = (title, isIto) => {
       const titleEl = document.createElement('div');
       titleEl.className = 'program-session-card__title';
 
-      const isIto = speakers.some(sp => sp.name_jp === '伊藤浩孝');
-      titleEl.innerHTML = formatSessionTitle(sessionTitle, isIto);
-
+      titleEl.innerHTML = formatSessionTitle(sessionTitle);
+			
       card.append(titleEl);
     }
 
@@ -834,6 +834,22 @@ const formatSessionTitle = (title, isIto) => {
     });
 
     card.append(speakersWrap);
+
+
+    const pillTags = session.tagPills || [];
+    if (pillTags.length) {
+    const tagWrap = document.createElement('div');
+    tagWrap.className = 'program-session-card__tags';
+
+    pillTags.slice(0, 2).forEach(t => {   // 2個まで表示
+      const pill = document.createElement('span');
+      pill.className = 'program-session-card__tag-pill';
+      pill.textContent = t;
+      tagWrap.append(pill);
+    });
+
+        card.append(tagWrap);
+      }
 
     return card;
   };
@@ -872,10 +888,22 @@ const formatSessionTitle = (title, isIto) => {
         );
 
         const track = pick(r, ['track', 'room', 'location', '会場'], '');
-        const tagsRaw = pick(r, ['tags', 'tag', 'タグ'], '');
+          // ▼ ここからタグ関連
+        const tagsRaw = pick(r, ['tags', 'タグ'], '');
+        const tag1    = pick(r, ['tag1', 'tag_1', 'タグ1'], '');
+        const tag2    = pick(r, ['tag2', 'tag_2', 'タグ2'], '');
+
+          // ロジック（Keynote 判定など）用の tags
         const tags = tagsRaw
-          ? tagsRaw.split(',').map(s => s.trim()).filter(Boolean)
-          : [];
+            ? tagsRaw.split(',')
+                .map(s => s.trim())
+                .filter(Boolean)
+            : [];
+
+          // 画面に出す用は tag1 / tag2 のみ
+        const tagPills = [];
+        if (tag1) tagPills.push(tag1);
+        if (tag2) tagPills.push(tag2);
 
         const row = {
           ...r,
@@ -883,7 +911,8 @@ const formatSessionTitle = (title, isIto) => {
           title: label,
           talk_title: talkTitle,
           track,
-          tags
+          tags,       // ← ロジック用
+          tagPills    // ← 表示用
         };
         schedule.push(row);
 
@@ -1026,7 +1055,7 @@ const formatSessionTitle = (title, isIto) => {
         if (keynoteTitle) {
         const st = document.createElement('p');
         st.className = 'program-session-main-title';
-        st.innerHTML = formatSessionTitle(keynoteTitle, false);
+        st.innerHTML = formatSessionTitle(keynoteTitle);
         body1.append(st);
     }
         const grid = document.createElement('div');
@@ -1189,6 +1218,244 @@ const formatSessionTitle = (title, isIto) => {
       BLOCKS.append(card3);
     } catch (e) {
       log('PROGRAM error', e);
+    }
+  })();
+})();
+
+// =============================================================================================
+// NOTICE（参加費変更のお知らせセクション）
+// =============================================================================================
+(() => {
+  const SEC   = document.getElementById('notice-cost');
+  const TITLE = document.getElementById('notice-title');
+  const LEAD  = document.getElementById('notice-lead');
+  const BODY  = document.getElementById('notice-body');
+  const CHG_TITLE  = document.getElementById('notice-change-title');
+  const CHG_BEFORE = document.getElementById('notice-change-before');
+  const CHG_AFTER  = document.getElementById('notice-change-after');
+  const FAQ_TITLE  = document.getElementById('notice-faq-title');
+  const FAQ_LIST   = document.getElementById('notice-faq-list');
+
+  if (!SEC) return;
+
+  (async () => {
+    try {
+      const { mapText } = await loadTextMaps();
+
+      // ▼ タイトル・リード
+      if (TITLE) {
+        const rawTitle =
+          (mapText.notice_title || '').trim() ||
+          '＜重要なお知らせ＞<br>オンライン参加 無料化について';
+
+        // <br> を効かせる
+        TITLE.innerHTML = rawTitle;
+      }
+
+      if (LEAD) {
+        LEAD.textContent =
+          (mapText.notice_lead || '').trim() ||
+          '本イベントでは、オンライン参加の参加費を無料とさせていただきました。';
+      }
+
+      // ▼ ボディコピー（<br> を使いたい前提で innerHTML）
+      if (BODY) {
+        const body = (mapText.notice_body || '').trim();
+        if (body) {
+          BODY.innerHTML = body;
+        }
+      }
+
+      // ▼ 改行2行を、デバイスによって整形
+      const formatChangeText = (src, fallback) => {
+        const raw = (src && src.trim()) || fallback || "";
+        const lines = raw
+          .split(/\r?\n/)
+          .map(s => s.trim())
+          .filter(Boolean);
+        if (!lines.length) return "";
+
+        const title  = lines[0];         // 【変更前】 or 【変更後】
+        const bodies = lines.slice(1);   // 2行ぶん
+
+        const isMobile = window.matchMedia("(max-width: 599px)").matches;
+
+        if (isMobile) {
+          // スマホ：そのまま縦2行
+          return [title, ...bodies].join("<br>");
+        } else {
+          // PC / タブレット：2行を「／」で1行に
+          const joined = bodies.join("／");
+          return `${title}<br>${joined}`;
+        }
+      };
+
+      // ▼ 変更前／変更後
+      if (CHG_TITLE) {
+        CHG_TITLE.textContent =
+          (mapText.notice_change_title || '').trim() ||
+          '参加費に関する変更内容について';
+      }
+
+      if (CHG_BEFORE) {
+        CHG_BEFORE.innerHTML = formatChangeText(
+          mapText.notice_change_before,
+          `【変更前】
+東京校でのご参加の方：1,000円
+オンラインでのご参加の方：1,000円`
+        );
+      }
+
+      if (CHG_AFTER) {
+        CHG_AFTER.innerHTML = formatChangeText(
+          mapText.notice_change_after,
+          `【変更後】
+東京校でのご参加の方：1,000円
+オンラインでのご参加の方：無料`
+        );
+        CHG_AFTER.classList.add('notice-change__after'); // ★ 赤字用クラス
+      }
+
+      // ▼ ケース別FAQ（カテゴリ管理）
+      if (FAQ_TITLE) {
+        FAQ_TITLE.textContent =
+          (mapText.notice_faq_title || '').trim() ||
+          '参加費変更に伴うよくあるご質問';
+      }
+
+      if (FAQ_LIST) {
+        const groups = [
+          { code: 'online', titleKey: 'notice_faq_cat_online_title' },
+          { code: 'real',   titleKey: 'notice_faq_cat_real_title' },
+          // ここに { code: 'xxx', titleKey: 'notice_faq_cat_xxx_title' } を足せばカテゴリ追加
+        ];
+
+        groups.forEach(group => {
+          const titleText = (mapText[group.titleKey] || '').trim();
+          if (!titleText) return;  // タイトル未設定ならそのカテゴリを丸ごとスキップ
+
+          // カテゴリ全体のラッパー
+          const catWrap = document.createElement('section');
+          catWrap.className = 'notice-faq-category';
+
+          const catTitle = document.createElement('h4');
+          catTitle.className = 'notice-faq-category-title';
+          catTitle.textContent = titleText;
+
+          const catList = document.createElement('div');
+          catList.className = 'notice-faq-category-list';
+
+          // Q/Aを拾う（最大10件くらい）
+          for (let i = 1; i <= 10; i++) {
+            const qKey = `notice_faq_${group.code}_q${i}`;
+            const aKey = `notice_faq_${group.code}_a${i}`;
+            const q = (mapText[qKey] || '').trim();
+            const a = (mapText[aKey] || '').trim();
+            if (!q) continue;
+
+            const card = document.createElement('article');
+            card.className = 'faq-card';
+
+            const qBtn = document.createElement('button');
+            qBtn.type = 'button';
+            qBtn.className = 'faq-card__question';
+
+            const qText = document.createElement('span');
+            qText.className = 'faq-card__q-text';
+            qText.textContent = `Q. ${q}`;
+
+            const icon = document.createElement('span');
+            icon.className = 'faq-card__icon';
+            icon.textContent = '＋';
+
+            qBtn.append(qText, icon);
+
+            const aWrap = document.createElement('div');
+            aWrap.className = 'faq-card__answer';
+            aWrap.hidden = true;
+
+            const aP = document.createElement('p');
+            aP.textContent = a ? `A. ${a}` : '';
+            aWrap.appendChild(aP);
+
+            qBtn.addEventListener('click', () => {
+              const willOpen = aWrap.hidden;
+              aWrap.hidden = !willOpen;
+              card.classList.toggle('is-open', willOpen);
+              icon.textContent = willOpen ? '－' : '＋';
+            });
+
+            card.append(qBtn, aWrap);
+            catList.append(card);
+          }
+
+          // 1件も Q がなければカテゴリ自体出さない
+          if (catList.children.length === 0) return;
+
+          catWrap.append(catTitle, catList);
+          FAQ_LIST.append(catWrap);
+        });
+
+      // ▼ ここまでで BODY / .notice-change / .notice-faq に中身が入った想定
+      //    → まとめて折りたたみ領域にする
+
+      const wrap = document.querySelector('.notice-wrap');
+      if (wrap && BODY) {
+        const changeEl = document.querySelector('.notice-change');
+        const faqEl    = document.querySelector('.notice-faq');
+
+        // どれも存在しない場合は折りたたみ処理はスキップ
+        if (changeEl || faqEl || BODY.textContent.trim()) {
+          // 詳細用ラッパー
+          const detail = document.createElement('div');
+          detail.className = 'notice-detail is-collapsed';
+
+          // BODY, 変更前後, FAQ を detail の中へ移動
+          if (BODY.parentElement === wrap) {
+            detail.appendChild(BODY);
+          }
+          if (changeEl && changeEl.parentElement === wrap) {
+            detail.appendChild(changeEl);
+          }
+          if (faqEl && faqEl.parentElement === wrap) {
+            detail.appendChild(faqEl);
+          }
+
+          // トグルボタンを作成
+          const toggle = document.createElement('button');
+          toggle.type = 'button';
+          toggle.className = 'notice-toggle';
+          toggle.innerHTML = `
+            <span class="notice-toggle-icon">∨</span>
+            <span class="notice-toggle-label">さらに詳しく</span>
+          `;
+
+          toggle.addEventListener('click', () => {
+            const willOpen = detail.classList.contains('is-collapsed');
+            detail.classList.toggle('is-collapsed', !willOpen);
+            toggle.classList.toggle('is-open', willOpen);
+            // ラベルを「閉じる」に変えるならここで
+            const label = toggle.querySelector('.notice-toggle-label');
+            if (label) {
+              label.textContent = willOpen ? '閉じる' : 'さらに詳しく';
+            }
+          });
+
+          // LEAD のすぐ後ろにボタン、その後に detail を挿入
+          if (LEAD && LEAD.parentElement === wrap) {
+            wrap.insertBefore(toggle, LEAD.nextSibling);
+            wrap.insertBefore(detail, toggle.nextSibling);
+          } else {
+            // 念のため: LEAD がなければタイトルの後ろに
+            const ref = TITLE && TITLE.parentElement === wrap ? TITLE.nextSibling : wrap.firstChild;
+            wrap.insertBefore(toggle, ref);
+            wrap.insertBefore(detail, toggle.nextSibling);
+          }
+        }
+      }
+      }
+    } catch (e) {
+      console.error('NOTICE error', e);
     }
   })();
 })();
