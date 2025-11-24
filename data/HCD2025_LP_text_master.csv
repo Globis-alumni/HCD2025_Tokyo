@@ -4,11 +4,44 @@ hero,tagline,hero_tagline,選択肢、増える。言葉、整う。足が、前
 hero,meta,hero_meta,東京校 ／ オンライン ハイブリッド開催　12/14 13:00 start,,Tokyo Campus,日付・場所
 hero,cta_primary,btn_register,Peatixで申込,,Register on Peatix,https://hcd-tokyo-2025.peatix.com/view
 hero,cta_secondary,btn_calendar,カレンダーに追加(.ics),,Add to Calendar,カレンダーに追加(.ics)
+hero,notice,hero_notice,＜重要なお知らせ＞オンライン参加 無料化について,,,HEROタグライン下のバッジ用
 about,section_title,about_title,Homecoming Dayとは,,About,セクション見出し
 about,lead,about_lead,幅広い期のグロービス卒業生がゆるやかに再会し、学びと会話が交わる1日。『選択肢が増え、言葉が整い、足が前に出る。』——そんな機会をつくります。,,,
 about,tip,about_tip_1,卒業生みんなが主役,久しぶりの再会、新しい出会い。仲間やお世話になった講師と語らい、ここからまた新しいステージへ。,,
 about,tip,about_tip_2,交流を楽しむ,旧知の仲間と語り合い、新しい仲間と出会う時間。心がはずみ、つながりがまた新たな一歩へ。,,
 about,tip,about_tip_3,気軽に参加ができる,オンライン参加や途中の出入りも自由。予定に合わせて無理なく楽しめる。誰にでも開かれた交流の場。,,
+notice,section_title,notice_title,＜重要なお知らせ＞<br>オンライン参加 無料化について,,,
+notice,lead,notice_lead,多くの方にご参加いただきたい。その想いからオンライン参加を無料に変更いたします。,,,
+notice,body,notice_body,"多数の方から参加申込をいただき、誠にありがとうございます。<br>これまで参加費について一律1,000円としておりました。<br>多くの卒業生が気軽に参加ができるホームカミングデーを実現するために<br>オンラインでの参加を無料とさせていただくことといたしました。<br>すでにオンライン参加でお申込の方は返金手続きをさせていただきます。<br>その他のよくある質問をまとめておりますので併せてご覧ください。<br><br>",,,
+notice,change_title,notice_change_title,参加費に関する変更内容について,,,小見出し
+notice,change_before,notice_change_before,"【変更前】
+東京校でのご参加の方：1,000円
+オンラインでのご参加の方：1,000円",,,箇条書き
+notice,change_after,notice_change_after,"【変更後】
+東京校でのご参加の方：1,000円
+オンラインでのご参加の方：無料",,,箇条書き
+notice,faq_cat,notice_faq_cat_online_title,〜 オンラインでご参加の方向け 〜,,,
+notice,faq_cat,notice_faq_cat_real_title,〜 東京校でご参加の方向け 〜,,,
+notice,q,notice_faq_online_q1,既に参加申込済みですが、返金はありますか？,,,
+notice,a,notice_faq_online_a1,はい、返金手続きをさせていただきます。事務局から順次ご案内させていただいております。,,,
+notice,q,notice_faq_online_q2,オンラインでの申込を東京校参加で振替することは可能ですか？,,,
+notice,a,notice_faq_online_a2,申し訳ございませんが、申込し直す必要がございます。Peatixのマイチケットから、主催者へご連絡をお願いします。主催者側でキャンセル対応の後、再度お申し込みください。,,,
+notice,q,notice_faq_online_q3,参加申込済みをキャンセルできますか？,,,
+notice,a,notice_faq_online_a3,Peatixのマイチケットから、主催者へご連絡をお願いします。主催者側でキャンセル対応をいたします。,,,
+notice,q,notice_faq_online_q4,用事があるのでオンラインで参加したいけど、大丈夫ですか？,,,
+notice,a,notice_faq_online_a4,ご参加いただくことは可能ですが、セッションによっては東京校限定やグループワークありのセッションがございます。グループワークありのセッションについては、ご発言できる環境でご参加をお願いしております。,,,
+notice,q,notice_faq_online_q5,,,,
+notice,a,notice_faq_online_a5,,,,
+notice,q,notice_faq_real_q1,東京校での参加からオンライン参加に変更できますか？,,,
+notice,a,notice_faq_real_a1,変更は可能です。Peatixのマイチケットから主催者へチケットキャンセルのご連絡をお願い致します。その後、オンラインチケットを再度ご購入お願いいたします。なお、12/7まではキャンセル料がかかりません。それ以降は発生しますので予めご了承ください。,,,
+notice,q,notice_faq_real_q2,急用が発生したのでキャンセルできますか？,,,
+notice,a,notice_faq_real_a2,Peatixのマイチケットから、主催者へご連絡をお願いします。主催者側でキャンセル対応をいたします。なお、12/7まではキャンセル料がかかりません。それ以降は発生しますので予めご了承ください。,,,
+notice,q,notice_faq_real_q3,抽選の結果、希望のセッションに参加できないので、キャンセルできますか？,,,
+notice,a,notice_faq_real_a3,キャンセルは可能です。なお、12/7まではキャンセル料がかかりません。Peatixのマイチケットから、主催者へご連絡をお願いします。主催者側でキャンセル対応をいたします。,,,
+notice,q,notice_faq_real_q4,,,,
+notice,a,notice_faq_real_a4,,,,
+notice,q,notice_faq_real_q5,,,,
+notice,a,notice_faq_real_a5,,,,
 speakers,section_title,speakers_title,登壇者,,Speakers,セクション見出し
 speakers,keynote_heading,keynote_title,全体講演,,Keynote,メイン登壇者用見出し
 schedule,section_title,schedule_title,プログラム,,Program,
@@ -17,6 +50,12 @@ register,section_title,register_title,お申し込み,,Registration,
 register,lead,register_lead,Peatixにて受付いたします。参加検討中の方はカレンダー登録をどうぞ。,,,
 register,cta_primary,btn_register,Peatixで参加申込,,Register on Peatix,https://hcd-tokyo-2025.peatix.com/view
 register,cta_secondary,btn_calendar,カレンダーに追加(.ics),,Add to Calendar,カレンダーに追加(.ics)
+hcd_voice,section_title,voices_hcd_title,ホームカミングデーの思い出,,,
+hcd_voice,section_sub,voices_hcd_sub,参加したみなさんに、印象に残っているシーンをインタビュー,,,
+hcd_voice,lead,voices_hcd_lead,幅広い期・多様なバックグラウンドの卒業生や講師など関係者が集うホームカミングデー。6人の卒業生と事務局の方に、その魅力を語ってもらいました。,,,
+Gkai_voice,section_title,voices_gkai_title,あなたにとってG会とはどんな存在？,,,
+Gkai_voice,section_sub,voices_gkai_sub,グロービス卒業生ネットワーク「G会」への想いをインタビュー。,,,
+Gkai_voice,lead,voices_gkai_lead,グロービスの卒業生全員が、G会のメンバー、『タテ・ヨコ・ナナメのゆるいつながりを作る』グロービス経営大学院のアルムナイネットワークです。キャリアの相談相手、挑戦を応援し合う仲間、気軽に集まれる。そんなG会へのリアルな声をお届けします。,,,
 faq,section_title,faq_title,よくある質問,,FAQ,
 faq,q,faq_q1,参加できる条件は、何ですか？,,,
 faq,a,faq_a1,パートタイムMBA、フルタイムMBA全ての卒業生であればどなたでもご参加いただけます。なおイベントは他言語への通訳等はございません。予めご了承ください。,,,
@@ -29,13 +68,15 @@ faq,a,faq_a4,東京校参加の場合は、200名を上限としております�
 faq,q,faq_q5,抽選はどのような形ですか？,,,
 faq,a,faq_a5,二期に分けて抽選にて決定をさせていただきます。第1次お申込みの期限は、11/22（土）23:59（抽選発表は、11/25（火）を予定しています。）、第2次お申込みの期限は、12/6（土）23:59（抽選発表は、12/9（火）を予定しています。）なお、第２次のお申込は、第1次で定員に達してない分科会のみとなります。また以降の受付は、当日空きのある分科会のみ選択となります。,,,
 faq,q,faq_q6,無料のイベントですか？,,,
-faq,a,faq_a6,"有料のイベントになっており、1,000円（消費税込）です。東京校ご参加の場合は、全体懇親会の軽食付きになっています。",,,
+faq,a,faq_a6,"オンライン参加の場合は無料、東京校参加の場合は、有料のイベントになっており、1,000円（消費税込）です。東京校ご参加の場合は、全体懇親会の軽食付きになっています。",,,
 faq,q,faq_q7,申込をキャンセルする場合は？,,,
-faq,a,faq_a7,"Peatixのマイチケットから、主催者へ連絡をしてください。主催者側でキャンセル対応をいたします。なお、12/7まではキャンセル料がかかりません。それ以降は発生しますので予めご了承ください。",,,
-faq,q,faq_q8,撮影は可能ですか？,,,
-faq,a,faq_a8,一部セッションは撮影不可の場合があります。当日の案内に従ってください。,,,
-faq,q,faq_q9,終了後の懇親会は、ありますか？,,,
-faq,a,faq_a9,"二次会懇親会をスパイスHUB 六番町店にて実施する予定です（19:00～21:00  会費 3,500円を予定しています。）。Peatixの申込時に伺いますのでご回答ください。",,,
+faq,a,faq_a7,Peatixのマイチケットから、主催者へご連絡をお願いします。主催者側でキャンセル対応をいたします。なお、12/7まではキャンセル料がかかりません。それ以降は発生しますので予めご了承ください。,,,
+faq,q,faq_q8,参加方法を変更できますか？,,,
+faq,a,faq_a8,東京校での参加、オンライン参加ともに変更することは可能です。その場合、申込し直す必要がございます。Peatixのマイチケットから、主催者へご連絡をお願いします。主催者側でキャンセル対応の後、再度お申し込みください。,,,
+faq,q,faq_q9,撮影は可能ですか？,,,
+faq,a,faq_a9,一部セッションは撮影不可の場合があります。当日の案内に従ってください。,,,
+faq,q,faq_q10,終了後の懇親会は、ありますか？,,,
+faq,a,faq_a10,"二次会懇親会をスパイスHUB 六番町店にて実施する予定です（19:00～21:00  会費 3,500円を予定しています。）。Peatixの申込時に伺いますのでご回答ください。",,,
 access,section_title,access_title,アクセス,,Access,
 access,address,access_address,グロービス経営大学院 東京校,,GLOBIS University Tokyo Campus,
 footer,credit,footer_credit,運営：G会 東京校 幹事団,,Organized by: Alumni Network (Tokyo),太字・サイズ大きめで表示
@@ -54,11 +95,5 @@ schedule,label,program_legend_breakout_part1,分科会①（講演／ワーク�
 schedule,label,program_legend_breakout_part2,分科会②（講演／ワークショップ）16:20〜17:20,,Workshop,参加型セッション
 schedule,label,program_legend_networking,全体懇親会（東京校参加者のみ）,,,
 register,cta_primary,btn_register,Peatixで申込,,Register on Peatix,https://hcd-tokyo-2025.peatix.com/view
-
+,,,,,,
 register,cta_secondary,btn_calendar,カレンダーに追加(.ics),,Add to Calendar,カレンダーに追加(.ics)
-
-
-
-
-
-
