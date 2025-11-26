@@ -12,7 +12,7 @@ about,tip,about_tip_2,交流を楽しむ,旧知の仲間と語り合い、新し
 about,tip,about_tip_3,気軽に参加ができる,オンライン参加や途中の出入りも自由。予定に合わせて無理なく楽しめる。誰にでも開かれた交流の場。,,
 notice,section_title,notice_title,＜重要なお知らせ＞<br>オンライン参加 無料化について,,,
 notice,lead,notice_lead,多くの方にご参加いただきたい。その想いからオンライン参加を無料に変更いたします。,,,
-notice,body,notice_body,"多数の方から参加申込をいただき、誠にありがとうございます。<br>これまで参加費について一律1,000円としておりました。<br>多くの卒業生が気軽に参加ができるホームカミングデーを実現するために<br>オンラインでの参加を無料とさせていただくことといたしました。<br>すでにオンライン参加でお申込の方は返金手続きをさせていただきます。<br>その他のよくある質問をまとめておりますので併せてご覧ください。<br><br>",,,
+notice,body,notice_body,"多数の方から参加申込をいただき、誠にありがとうございます。<br>これまで参加費について一律1,000円としておりました。<br>多くの卒業生が気軽に参加できるホームカミングデーを実現するために<br>オンラインでの参加を無料とさせていただくことといたしました。<br>すでにオンライン参加でお申込の方は返金手続きをさせていただきます。<br>その他のよくある質問をまとめておりますので併せてご覧ください。<br><br>",,,
 notice,change_title,notice_change_title,参加費に関する変更内容について,,,小見出し
 notice,change_before,notice_change_before,"【変更前】
 東京校でのご参加の方：1,000円
@@ -51,11 +51,11 @@ register,lead,register_lead,Peatixにて受付いたします。参加検討中�
 register,cta_primary,btn_register,Peatixで参加申込,,Register on Peatix,https://hcd-tokyo-2025.peatix.com/view
 register,cta_secondary,btn_calendar,カレンダーに追加(.ics),,Add to Calendar,カレンダーに追加(.ics)
 hcd_voice,section_title,voices_hcd_title,ホームカミングデーの思い出,,,
-hcd_voice,section_sub,voices_hcd_sub,参加したみなさんに、印象に残っているシーンをインタビュー,,,
-hcd_voice,lead,voices_hcd_lead,幅広い期・多様なバックグラウンドの卒業生や講師など関係者が集うホームカミングデー。6人の卒業生と事務局の方に、その魅力を語ってもらいました。,,,
-Gkai_voice,section_title,voices_gkai_title,あなたにとってG会とはどんな存在？,,,
-Gkai_voice,section_sub,voices_gkai_sub,グロービス卒業生ネットワーク「G会」への想いをインタビュー。,,,
-Gkai_voice,lead,voices_gkai_lead,グロービスの卒業生全員が、G会のメンバー、『タテ・ヨコ・ナナメのゆるいつながりを作る』グロービス経営大学院のアルムナイネットワークです。キャリアの相談相手、挑戦を応援し合う仲間、気軽に集まれる。そんなG会へのリアルな声をお届けします。,,,
+hcd_voice,section_sub,voices_hcd_sub,幅広い期・多様なバックグラウンドの卒業生や関係者が集うホームカミングデー。<br>卒業生と事務局の方に、印象に残っているシーンなど、その魅力を語ってもらいました。,,,
+hcd_voice,lead,voices_hcd_lead,,,,
+Gkai_voice,section_title,voices_gkai_title,グロービス経営大学院卒業生ネットワーク『G会』,,,
+Gkai_voice,section_sub,voices_gkai_sub,『タテ・ヨコ・ナナメのゆるいつながりを作る』 G会は、<br>卒業生全員がメンバーとするグロービス経営大学院のアルムナイネットワークです。<br>キャリアの相談相手、挑戦を応援し合う仲間、気軽に集まるコミュニティ。<br>あなたにとってG会とはどんな存在か？リアルな声をお届けします。,,,
+Gkai_voice,lead,voices_gkai_lead,,,,
 faq,section_title,faq_title,よくある質問,,FAQ,
 faq,q,faq_q1,参加できる条件は、何ですか？,,,
 faq,a,faq_a1,パートタイムMBA、フルタイムMBA全ての卒業生であればどなたでもご参加いただけます。なおイベントは他言語への通訳等はございません。予めご了承ください。,,,
