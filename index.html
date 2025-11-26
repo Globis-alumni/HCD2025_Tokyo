@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ja">
 <head>
@@ -46,8 +47,10 @@
         <li><a href="#about"><strong>HCDとは</strong></a></li>
         <li><a href="#program"><strong>タイムテーブル</strong></a></li>
         <li><a href="#speakers"><strong>登壇者</strong></a></li>
+        <li><a href="#voices-hcd"><strong>参加者の声</strong></a></li>		  
         <li><a href="#faq"><strong>よくあるご質問</strong></a></li>
         <li><a href="#access"><strong>アクセス</strong></a></li>
+		<li><a href="#voices-gkai"><strong>G会について</strong></a></li>
       </ul>
     </nav>
 
@@ -75,8 +78,10 @@
       <li><a href="#about"><strong>HCDとは</strong></a></li>
       <li><a href="#program"><strong>タイムテーブル</strong></a></li>
       <li><a href="#speakers"><strong>登壇者</strong></a></li>
+      <li><a href="#voices-hcd"><strong>参加者の声</strong></a></li>		  
       <li><a href="#faq"><strong>よくあるご質問</strong></a></li>
       <li><a href="#access"><strong>アクセス</strong></a></li>
+	  <li><a href="#voices-gkai"><strong>G会について</strong></a></li>
       <li><a href="https://hcd-tokyo-2025.peatix.com/view" target="_blank" rel="noopener">
         <strong>参加申込(Peatix)</strong>
       </a></li>
@@ -107,11 +112,26 @@
       </a>
 
       <div class="cta">
-        <a id="btn-register" class="btn btn-primary" href="#" target="_blank" rel="noopener"></a>
-        <div class="cta-row">
-          <a id="btn-cal-ics" class="btn btn-ghost" href="#" target="_blank" rel="noopener"></a>
-        </div>
-      </div>
+      <!-- ▼ card-hover 追加 -->
+      <a
+       id="btn-register"
+       class="btn btn-primary card-hover"
+       href="#"
+       target="_blank"
+       rel="noopener"
+       ></a>
+
+  <div class="cta-row">
+    <!-- ▼ こっちも card-hover 追加 -->
+    <a
+      id="btn-cal-ics"
+      class="btn btn-ghost card-hover"
+      href="#"
+      target="_blank"
+      rel="noopener"
+    ></a>
+  </div>
+</div>
     </div>
   </header>
 
@@ -191,6 +211,22 @@
       </div>
     </div>
 
+
+<!-- ===== VOICES: Homecoming Day ===== -->
+<section id="voices-hcd" class="voices-section voices-section--hcd">
+  <div class="voices-wrap">
+    <h2 id="voices-hcd-title" class="voices-title">
+      ホームカミングデーの思い出
+    </h2>
+    <p id="voices-hcd-sub" class="voices-subtitle">
+      これまでのHomecoming Dayに参加した卒業生の声をご紹介します。
+    </p>
+    <!-- ★ JS がここにカードを append する -->
+    <div id="voices-hcd-grid" class="voices-grid"></div>
+  </div>
+</section>
+	  
+	  
 <!-- ===== FAQ ===== -->
 <section id="faq" class="faq-section">
   <h2 id="faq-title" class="faq-title">FAQ</h2>
@@ -203,13 +239,34 @@
 
   <div class="access-map-wrap">
     <iframe
-      src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d2744.015415992807!2d139.73490819595074!3d35.685308306227384!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188c637954c8f7%3A0xf45136104fe98b59!2z44Kw44Ot44O844OT44K557WM5Za25aSn5a2m6ZmiIOadseS6rOagoQ!5e0!3m2!1sja!2sjp!4v1763309813385!5m2!1sja!2sjp" width="600" height="450" style="border:0;" allowfullscreen=""loading="lazy"referrerpolicy="no-referrer-when-downgrade"allowfullscreen
+      src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d2744.015415992807!2d139.73490819595074!3d35.685308306227384!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188c637954c8f7%3A0xf45136104fe98b59!2z44Kw44Ot44O844OT44K557WM5Za25aSn5a2m6ZmiIOadseS6rOagoQ!5e0!3m2!1sja!2sjp!4v1763309813385!5m2!1sja!2sjp" 
+			width="600" height="450" 
+			style="border:0;" 
+			allowfullscreen=""
+			loading="lazy"
+			referrerpolicy="no-referrer-when-downgrade"
     ></iframe>
   </div>
 
   <p class="access-venue">グロービス経営大学院 東京校</p>
   <p class="access-note">※オンライン参加の方は、Zoomにてご参加ください。</p>
 </section>
+
+
+<!-- ===== VOICES: G会 ===== -->
+<section id="voices-gkai" class="voices-section voices-section--gkai">
+  <div class="voices-wrap">
+    <h2 id="voices-gkai-title" class="voices-title">
+      グロービス卒業生ネットワーク『G会』
+    </h2>
+    <p id="voices-gkai-sub" class="voices-subtitle">
+      G会や卒業生コミュニティへの想いを、卒業生のみなさんに伺いました。
+    </p>
+    <!-- ★ JS がここにカードを append する -->
+    <div id="voices-gkai-grid" class="voices-grid"></div>
+  </div>
+</section>
+	  
 <footer class="site-footer">
   <div class="site-footer__inner">
     <img
