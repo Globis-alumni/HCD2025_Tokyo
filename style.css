@@ -21,6 +21,7 @@
                 -apple-system, BlinkMacSystemFont,
                 "Hiragino Sans", "Noto Sans JP",
                 system-ui, sans-serif;
+　--focus-ring: 0 0 0 3px rgba(34,84,211,0.45);
 }
 
 html, body {
@@ -51,12 +52,61 @@ html, body {
   background: #f7f8ff;   /* ← スケジュールの青 */
   overflow: visible;
 }
+/* ▼ スマホでは「画面−ヘッダー」をHEROに使う */
+@media (max-width: 600px) {
+  .hero {
+    min-height: calc(100vh - 56px);  /* 固定ヘッダーぶんを引く */
+  }
+}
 .hero-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
   background: center/cover no-repeat url("./assets/hero_main_v1.jpg");
 }
+
+.hero-bg::before {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(
+      circle at 0% 0%,
+      rgba(255,255,255,0.55),
+      transparent 55%
+    );
+  opacity: 0;
+  transform: translateX(-12%);
+  animation: hero-light-sweep 14s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* 光が左上→右下へゆっくり動く感じ */
+@keyframes hero-light-sweep {
+  0% {
+    opacity: 0;
+    transform: translateX(-18%) translateY(-4%);
+  }
+  20% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0;
+    transform: translateX(18%) translateY(6%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(18%) translateY(6%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg::before {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 .hero-bg::after {
   content:"";
   position:absolute;
@@ -65,6 +115,49 @@ html, body {
     rgba(255,255,255,.50) 0%,
     rgba(255,255,255,.80) 55%,
     rgba(255,255,255,.50) 100%);
+}
+/* ===== HERO background motion (Ken Burns風) ===== */
+.hero-bg {
+  /* 既存の指定はそのまま＋これを足すイメージ */
+  background-size: 110%;
+  animation: hero-kenburns 28s ease-in-out infinite alternate;
+}
+
+/* ゆっくりズームしながら少しパンする */
+@keyframes hero-kenburns {
+  0% {
+    background-size: 110%;
+    background-position: 50% 30%;  /* ちょい上寄り */
+  }
+  50% {
+    background-size: 118%;
+    background-position: 52% 35%;  /* 少し右下へ */
+  }
+  100% {
+    background-size: 125%;
+    background-position: 48% 40%;  /* 少し左下へ */
+  }
+}
+
+/* ▼ スマホでは HERO 背景アニメを止めて静止画にする */
+@media (max-width: 600px) {
+  .hero-bg {
+    animation: none;
+    background-size: cover;
+    background-position: center;
+  }
+  .hero-bg::before {
+    display: none;   /* 光のスイープも消す */
+  }
+}
+
+/* 動きが苦手な人向け（OS設定で「モーション控えめ」の場合は静止） */
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg {
+    animation: none;
+    background-size: cover;
+    background-position: center;
+  }
 }
 .hero-stack {
   position:relative;
@@ -144,14 +237,7 @@ html, body {
 }
 .br-sp { display:none; line-height:0; }
 
-@media (max-width:425px) {
-  .hero { min-height:86vh; }
-  :root { --cta-btn-w: clamp(200px,82vw,260px); }
-  .cta-row { gap:8px; }
-  .br-sp { display:block; }
-  .hero-band { justify-items:center; }
-  .hero-row--title { justify-content:center; }
-  .hero-title, .hero-meta {
+.hero-title, .hero-meta {
     text-align:center;
     justify-self:center;
   }
@@ -782,9 +868,24 @@ html, body {
   }
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .program-session-card {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .program-session-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+    border-color: rgba(34,84,211,0.45);
+  }
+}
+
 /* FAQ セクション */
 .faq-section {
-  background: #f7f8ff;
+  background: #ffffff;
   margin-top: 80px;
   padding: 40px 0 60px;
   border-top: 1px solid #eee;
@@ -849,6 +950,7 @@ html, body {
   margin-top: 20px;
   padding: 40px 0 60px;
   border-top: 1px solid #eee;
+  background: #f7f8ff;
 }
 .access-title {
   font-size: 2rem;
@@ -882,10 +984,244 @@ html, body {
   color: #555;
 }
 
+/* ===== 共通：VOICE 以外のカードだけホバーさせる ===== */
+@media (hover: hover) and (pointer: fine) {
+  .cta .btn {
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      background-color 0.18s ease,
+      color 0.18s ease;
+  }
+
+  .cta .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+  }
+
+  .btn-primary:hover {
+    background: #1741a8; /* var(--blue) を少し暗くした感じ */
+  }
+
+  .btn-ghost:hover {
+    background: #eef3ff;
+  }
+}
+
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  }
+
+/* ===== VOICES ===== */
+.voices-section {
+  padding: 64px 16px;
+}
+
+.voices-section--hcd {
+  background: #f7f8ff;
+}
+
+.voices-section--gkai {
+  background: #ffffff;
+}
+
+.voices-wrap {
+  width: min(92vw, 980px);
+  margin-inline: auto;
+  display: grid;
+  gap: 20px;
+  justify-items: center;
+  text-align: center;
+}
+
+.voices-title {
+  margin: 0;
+  font-size: clamp(22px, 3.2vw, 30px);
+  font-weight: 800;
+  font-family: var(--font-round);
+  text-align: center;
+}
+
+.voices-subtitle {
+  margin: 0;
+  font-size: clamp(13px, 2.2vw, 15px);
+  color: #444;
+  line-height: 1.8;
+  max-width: 720px;
+  text-align: center;
+
+}
+
+.voices-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 20px;
+}
+
+@media (max-width: 960px) {
+  .voices-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .voices-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.voice-card {
+  position: relative;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e5e8f4;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  padding: 16px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+  overflow: hidden;
+
+  /* ▼ ここからアニメーション系を追加 */
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.45s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* 1列目〜3列目あたりだけディレイを変える例 */
+.voice-card:nth-child(1) { transition-delay: 0.00s; }
+.voice-card:nth-child(2) { transition-delay: 0.05s; }
+.voice-card:nth-child(3) { transition-delay: 0.10s; }
+.voice-card:nth-child(4) { transition-delay: 0.15s; }
+.voice-card:nth-child(5) { transition-delay: 0.20s; }
+.voice-card:nth-child(6) { transition-delay: 0.25s; }
+
+/* スクロールイン後の状態 */
+.voice-card.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 上部の写真＋名前 */
+.voice-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.voice-card__photo-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f4f6ff;
+  flex-shrink: 0;
+}
+
+.voice-card__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 22%;
+}
+
+.voice-card__name {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.voice-card__tagline {
+  margin: 2px 0 0;
+  font-size: 0.72rem;
+  color: #666;
+}
+
+/* 見出し＆本文 */
+.voice-card__title {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.voice-card__body {
+  margin: 2px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.8;
+  color: #333;
+}
+
+/* 装飾用の “カギカッコ” */
+.voice-card::before {
+  content: "“";
+  position: absolute;
+  top: -18px;
+  right: 10px;
+  font-size: 60px;
+  color: rgba(34, 84, 211, 0.07);
+  font-family: var(--font-round);
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .voice-card.card-hover.is-visible:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* ===== G会 VOICES カード色変更 ===== */
+.voices-section--gkai .voice-card {
+  background: #f7f8ff;        /* ★ カード自体を薄い青に */
+  border-color: #e0e4f5;      /* ★ 少し青みのある枠線に変更（任意） */
+}
+
+.voices-section--gkai .voice-card__body {
+  color: #333;                /* 読みやすさ確保（白背景時と同じ） */
+}
+
+.voices-section--gkai .voice-card__title {
+  color: #111;                /* タイトルは濃いめで可読性UP */
+}
+
+/* ▼ グリッドの各セル（track）いっぱいまでカードを伸ばす */
+.voices-grid {
+  align-items: stretch;   /* 念のため明示 */
+}
+
+/* ▼ カード自体をセルいっぱいの高さにする */
+.voice-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Focus ring for keyboard navigation ===== */
+a.btn:focus-visible,
+button:focus-visible,
+.card[role="button"]:focus-visible,
+.program-speaker-card__name:focus-visible,
+.faq-card__question:focus-visible,
+.notice-toggle:focus-visible,
+.global-header__cta:focus-visible,
+.global-header__menu-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 8px;
+}
+
 /* ===== FOOTER ===== */
 .site-footer {
   background: #f7f8ff;
-  margin-top: 60px;
+  margin-top: 20px;
   padding: 24px 0 32px;
   border-top: 1px solid #eee;
 }
@@ -1086,7 +1422,7 @@ html, body {
 .global-header.is-open .global-header__menu-btn span:nth-child(3) {
   transform: translateY(-6px) rotate(-45deg);
 }
-@media (max-width: 768px) {
+@media (max-width: 949px) {
   .global-header__inner {
     justify-content: space-between;
   }
@@ -1099,6 +1435,23 @@ html, body {
   .global-header__menu-btn {
     display: block;
   }
+}
+
+.global-header {
+  transition:
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    padding 0.2s ease;
+}
+
+.global-header.is-scrolled {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.14);
+  background: rgba(247,248,255,0.96);
+}
+
+.global-header.is-scrolled {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.14);
+  background: rgba(247,248,255,0.96); /* ほんのり透過 */
 }
 
 /* ===== Section spacing (上下余白の共通設定) ===== */
@@ -1149,14 +1502,12 @@ html, body {
 }
 
 @media (max-width:425px) {
-  .hero { min-height:86vh; }
   :root { --cta-btn-w: clamp(200px,82vw,260px); }
   .cta-row { gap:8px; }
   .br-sp { display:block; }
   .hero-band { justify-items:center; }
   .hero-row--title { 
     justify-content:center; 
-    /* ▼ここから追加 */
     grid-auto-flow: row;      /* ロゴ → タイトルを縦並びに */
     justify-items: center;
   }
@@ -1184,10 +1535,6 @@ html, body {
   font-weight: 700;
   text-decoration: none;
   text-align: center;
-}
-
-.hero-notice:hover {
-  opacity: 0.9;
 }
 
 /* ▼ スマホ幅だけ、HERO無料化告知のフォントを少し小さく＆詰める */
@@ -1222,6 +1569,17 @@ html, body {
     line-height: 1.25;
   }
 
+}
+
+@keyframes hero-notice-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 36, 36, 0.45); }
+  70%  { box-shadow: 0 0 0 10px rgba(255, 36, 36, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 36, 36, 0); }
+}
+
+.hero-notice {
+  /* 既存 + これだけ足す */
+  animation: hero-notice-pulse 2.8s ease-out infinite;
 }
 
 /* ===== Notice section (参加費変更のお知らせ) ===== */
