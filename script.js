@@ -4,12 +4,21 @@
 const log = (...a) => console.debug('[HCD]', ...a);
 
 // ---------- GA4 event helper ----------
+const LP_ID = 'HCD2025_Tokyo';
+
 const track = (eventName, params = {}) => {
+  // このLP共通で付与したいパラメータをここでマージ
+  const baseParams = {
+    lp_id: LP_ID,              // このLPを識別するID
+    page: location.pathname,   // デフォルトでパスも入れておく
+    ...params                  // 呼び出し側の指定があれば上書き
+  };
+
   try {
     if (typeof gtag === 'function') {
-      gtag('event', eventName, params);
+      gtag('event', eventName, baseParams);
     } else {
-      log('GA not ready', eventName, params);
+      log('GA not ready', eventName, baseParams);
     }
   } catch (e) {
     log('GA track error', e);
@@ -77,7 +86,6 @@ const fetchCsvStrict = async (path) => {
 };
 
 // schedule_master 専用ローダー
-// HCD2025 用：1行目をヘッダーとしてそのまま使う
 const loadScheduleRows = async () => {
   const raw = await fetchText('./data/HCD2025_schedule_master.csv');
   if (!raw) return [];
@@ -115,20 +123,33 @@ document.addEventListener('DOMContentLoaded', clearScrollLock);
 window.addEventListener('load', clearScrollLock);
 
 // =============================================================================================
+// 共通：カードのホバー演出
+// =============================================================================================
+/* CSS 側に追加した想定：
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transform: translateY(0);
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+*/
+
+// =============================================================================================
 // HERO
 // =============================================================================================
 (() => {
   const el = {
-    title: document.getElementById("hero-title-text"),
-    meta : document.getElementById("hero-meta"),
-    tag  : document.getElementById("hero-tagline"),
-    reg  : document.getElementById("btn-register"),
-    ics  : document.getElementById("btn-cal-ics"),
-	notice: document.getElementById("hero-notice-link"),   // ★ 追加
+    title:  document.getElementById("hero-title-text"),
+    meta:   document.getElementById("hero-meta"),
+    tag:    document.getElementById("hero-tagline"),
+    reg:    document.getElementById("btn-register"),
+    ics:    document.getElementById("btn-cal-ics"),
+    notice: document.getElementById("hero-notice-link"),
   };
   if (!el.title || !el.meta || !el.tag) return;
 
-  // ★ ここでデフォルトのICSパスを決める（実際のファイル名に合わせて変更）
   const DEFAULT_ICS_URL = "./assets/HCD2025.ics";
 
   const applyTaglineBreak = (t = "") =>
@@ -139,17 +160,12 @@ window.addEventListener('load', clearScrollLock);
   const injectMobileBreakMeta = (s = "") =>
     s.replace(/(\s+)(\d{1,2}\/\d{1,2}.*)$/u, '$1<span class="br-sp"></span>$2');
 
-  // ▼ HEROタイトルをデバイス別に整形
   const formatHeroTitle = (s = "") => {
     const base = (s || "").replace(/\s+/g, " ").trim();
     const isSP = window.matchMedia("(max-width: 425px)").matches;
 
-    if (!isSP) {
-      // PC / タブレットはそのまま
-      return base;
-    }
+    if (!isSP) return base;
 
-    // スマホ時だけ「東京校」「ホームカミングデー」「2025」に分解して改行
     let txt = base;
     const yearMatch = txt.match(/(20\d{2})/);
     let year = "";
@@ -172,19 +188,22 @@ window.addEventListener('load', clearScrollLock);
   (async () => {
     try {
       const { mapText, allVals } = await loadTextMaps();
-	
-	  // HERO下の「重要なお知らせ」バッジの文言
+
       if (el.notice) {
         const noticeText =
           (mapText.hero_notice || '').trim() ||
           '＜重要なお知らせ＞オンライン参加 無料化について';
         el.notice.textContent = noticeText;
+        el.notice.addEventListener('click', () => {
+          track('hero_notice_click', {
+            target_id: 'notice-cost',
+          });
+        });		  
       }
 
       const heroTitleRaw =
         mapText.hero_title_jp || "東京校 ホームカミングデー 2025";
 
-      // ★ タイトル反映
       const applyHeroTitle = () => {
         el.title.innerHTML = formatHeroTitle(heroTitleRaw);
       };
@@ -206,14 +225,12 @@ window.addEventListener('load', clearScrollLock);
       el.reg.href =
         mapText.peatix_url || "https://hcd-tokyo-2025.peatix.com/view";
 
-      // ★ Peatix ボタンクリックを計測
       el.reg.addEventListener("click", () => {
-        track("peatix_click", {
-          link_url: el.reg.href,
-          position: "hero",
-          page: location.pathname,
-        });
+      track("peatix_click", {
+        link_url: el.reg.href,
+        position: "hero",
       });
+	  });
 
       let icsLabel = mapText.btn_calendar_ics || "";
       if (!icsLabel) {
@@ -224,7 +241,6 @@ window.addEventListener('load', clearScrollLock);
       }
       el.ics.textContent = icsLabel;
 
-      // CSVのURLがあれば優先、なければデフォルトのICSファイル
       const csvIcsUrl = (mapText.calendar_ics_url || "").trim();
       const icsUrl = csvIcsUrl || DEFAULT_ICS_URL;
 
@@ -232,18 +248,15 @@ window.addEventListener('load', clearScrollLock);
         el.ics.href = icsUrl;
         el.ics.download = icsUrl.split("/").pop();
 
-        // ★ ICS ダウンロード計測
         el.ics.addEventListener("click", () => {
           track("calendar_ics_download", {
             file: el.ics.download || icsUrl,
-            page: location.pathname,
           });
         });
       } else {
         el.ics.style.display = "none";
       }
 
-      // 画面サイズ変更時にタイトル/タグラインを再整形
       window.addEventListener(
         "resize",
         () => {
@@ -257,7 +270,7 @@ window.addEventListener('load', clearScrollLock);
     }
   })();
 })();
-	  
+
 // =============================================================================================
 // ABOUT
 // =============================================================================================
@@ -270,19 +283,14 @@ window.addEventListener('load', clearScrollLock);
 
   const applyAboutLeadBreak = (s = "") => {
     const isSP = window.matchMedia("(max-width: 425px)").matches;
-
-    // いったん既存の <br> は全部削除
     let t = s.replace(/\s*<br\s*\/?>\s*/g, "");
 
     if (isSP) {
-      // スマホ専用の改行位置
       t = t
         .replace("ゆるやかに再会し、", "ゆるやかに再会し、<br>")
         .replace("学びと会話が交わる1日。", "学びと会話が交わる1日。<br>")
-        // 『…足が前に出る。』 のあとで必ず改行
         .replace(/足が前に出る。』\s*——/, "足が前に出る。』<br>——");
     } else {
-      // PC / タブレットは今までどおり1ヶ所だけ
       t = t.replace("学びと会話が交わる1日。", "学びと会話が交わる1日。<br>");
     }
 
@@ -305,11 +313,15 @@ window.addEventListener('load', clearScrollLock);
 
         const card = document.createElement("div");
         card.className = "about-card";
+		card.classList.add("card-hover");
+
         const wm = document.createElement("span");
         wm.className = "wm";
         wm.textContent = String(i);
+
         const h3 = document.createElement("h3");
         h3.textContent = title;
+
         const p  = document.createElement("p");
         p.textContent  = body;
 
@@ -328,7 +340,6 @@ window.addEventListener('load', clearScrollLock);
   })();
 })();
 
-
 // =============================================================================================
 // SPEAKERS（assets_full 対応版・レイアウトは card--keynote / card--std 方式）
 // =============================================================================================
@@ -340,13 +351,11 @@ window.addEventListener('load', clearScrollLock);
   const KEYNOTE_IDS = new Set([1, 2]);
   const PLACEHOLDER = './assets/placeholder_square.jpg';
 
-  // ---- scroll lock（body だけロック）----
   const setScrollLock = (on) => {
     if (!document.body) return;
     document.body.classList.toggle('no-scroll', !!on);
   };
 
-  // ---- assets_full.csv -> ./assets/<basename> ----
   let _assetPathByNamePromise = null;
   const loadAssetPathByName = async () => {
     if (_assetPathByNamePromise) return _assetPathByNamePromise;
@@ -395,7 +404,6 @@ window.addEventListener('load', clearScrollLock);
   const sanitizeName = (jp, row) =>
     (/^(yes|no)$/i.test(jp) || jp === '') ? pick(row, ['name_jp'], '') : jp;
 
-  // ---- Modal ----
   const MODAL = document.getElementById('speaker-modal');
   const EL = MODAL ? {
     photo:   document.getElementById('modal-photo'),
@@ -431,15 +439,12 @@ window.addEventListener('load', clearScrollLock);
     const fullList = window.HCD_SPEAKERS_FULL || [];
     const rich = fullList.find(s => s.id === sp.id) || sp;
 
-    // 画像
     setPhoto(EL.photo, rich.photo_file || rich.photo_url);
     EL.photo.alt = `${rich.name_jp || ''}（${rich.affiliation || ''}）`;
 
-    // 名前・所属
     EL.name.textContent = `${rich.name_jp || ''} / ${rich.name_en || ''}`;
     EL.aff.textContent  = rich.affiliation || '';
 
-    // バッジ＆タイトル
     EL.badges.innerHTML = '';
     EL.titles.innerHTML = '';
     const titles = [rich.title1, rich.title2, rich.title3, rich.title4, rich.title5].filter(Boolean);
@@ -456,13 +461,10 @@ window.addEventListener('load', clearScrollLock);
       }
     });
 
-    // プロフィール本文
     EL.bio.textContent = rich.bio_ja || rich.bio || '';
 
-    // 登壇セッション（speakers_master の session_titles のみを見る）
     const lines = [];
     const seen  = new Set();
-
     const selfTitles = Array.isArray(rich.session_titles)
       ? rich.session_titles
       : [];
@@ -498,7 +500,6 @@ window.addEventListener('load', clearScrollLock);
   setInterval(unlockIfClosed, 1500);
   unlockIfClosed();
 
-  // ---- カード描画 ----
   (async () => {
     try {
       const rows = await fetchCsvStrict('./data/HCD2025_speakers_master.csv');
@@ -555,62 +556,61 @@ window.addEventListener('load', clearScrollLock);
 
       const ordered = ORDER.map(id => byId.get(id)).filter(Boolean);
 
-      GRID.innerHTML = ''; // フラットにカードを詰める
+      GRID.innerHTML = '';
 
-	  const createCard = (sp) => {
-      const card = document.createElement('article');
-      card.className = 'card ' + (KEYNOTE_IDS.has(sp.id) ? 'card--keynote' : 'card--std');
-      card.id = `speaker-${sp.id}`;
-      card.tabIndex = 0;
-      card.setAttribute('role', 'button');
-      card.setAttribute('aria-label', `${sp.name_jp || '登壇者'} のプロフィールを開く`);
+      const createCard = (sp) => {
+        const card = document.createElement('article');
+        card.className = 'card ' + (KEYNOTE_IDS.has(sp.id) ? 'card--keynote' : 'card--std');
+		card.classList.add('card-hover');
+        card.id = `speaker-${sp.id}`;
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', `${sp.name_jp || '登壇者'} のプロフィールを開く`);
 
-      const imgWrap = document.createElement('div');
-      imgWrap.className = 'card__photo-wrap';
-      const img = document.createElement('img');
-      img.className = 'card__photo';
-      setPhoto(img, sp.photo_file || sp.photo_url);
-      img.alt = sp.name_jp || '';
-      imgWrap.appendChild(img);
+        const imgWrap = document.createElement('div');
+        imgWrap.className = 'card__photo-wrap';
+        const img = document.createElement('img');
+        img.className = 'card__photo';
+        setPhoto(img, sp.photo_file || sp.photo_url);
+        img.alt = sp.name_jp || '';
+        imgWrap.appendChild(img);
 
-      const body = document.createElement('div');
-      body.className = 'card__body';
-      const nm = document.createElement('h3');
-      nm.className = 'card__name';
-      nm.textContent = sp.name_jp || '';
-      const cta = document.createElement('button');
-      cta.type = 'button';
-      cta.className = 'card__cta';
-      cta.textContent = '詳しく見る';
-      body.append(nm, cta);
+        const body = document.createElement('div');
+        body.className = 'card__body';
+        const nm = document.createElement('h3');
+        nm.className = 'card__name';
+        nm.textContent = sp.name_jp || '';
+        const cta = document.createElement('button');
+        cta.type = 'button';
+        cta.className = 'card__cta';
+        cta.textContent = '詳しく見る';
+        body.append(nm, cta);
 
-      card.append(imgWrap, body);
+        card.append(imgWrap, body);
 
-  // ★ ここで GA4 イベントを飛ばしてからモーダルを開く
-       const handleOpen = () => {
-        track('speaker_modal_open', {
-        speaker_id: sp.id,
-        speaker_name: sp.name_jp || '',
-        speaker_affiliation: sp.affiliation || '',
-        page: location.pathname
-    });
-    openModal(sp);
-  };
+        const handleOpen = () => {
+          track('speaker_modal_open', {
+            speaker_id: sp.id,
+            speaker_name: sp.name_jp || '',
+            speaker_affiliation: sp.affiliation || '',
+          });
+          openModal(sp);
+        };
 
-      card.addEventListener('click', handleOpen);
-      card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleOpen();
-    }
-  });
-      cta.addEventListener('click', (e) => {
-       e.stopPropagation();
-      handleOpen();
-  });
+        card.addEventListener('click', handleOpen);
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleOpen();
+          }
+        });
+        cta.addEventListener('click', (e) => {
+          e.stopPropagation();
+          handleOpen();
+        });
 
-  return card;
-};
+        return card;
+      };
 
       ordered.forEach(sp => {
         if (!sp) return;
@@ -622,7 +622,6 @@ window.addEventListener('load', clearScrollLock);
     }
   })();
 })();
-
 
 // =============================================================================================
 // PROGRAM（第1〜3部：テキストマスター＋スケジュール＋登壇者リンク）
@@ -641,98 +640,89 @@ window.addEventListener('load', clearScrollLock);
     return def;
   };
 
-const SESSION_NUM = ['①','②','③','④','⑤','⑥'];
+  const SESSION_NUM = ['①','②','③','④','⑤','⑥'];
 
-// ▼ 追加：分科会見出しをモバイルだけ改行
-const formatBreakoutTitle = (s = "") => {
-  const base = String(s || "").replace(/\s+/g, " ").trim();
-  const isSP = window.matchMedia("(max-width: 425px)").matches;
-  if (!isSP) return base;  // PC/タブレットはそのまま
+  const formatBreakoutTitle = (s = "") => {
+    const base = String(s || "").replace(/\s+/g, " ").trim();
+    const isSP = window.matchMedia("(max-width: 425px)").matches;
+    if (!isSP) return base;
 
-  if (base.startsWith("分科会①")) {
-    return "分科会①（講演／ワークショップ）<br>15:00〜16:00";
-  }
-  if (base.startsWith("分科会②")) {
-    return "分科会②（講演／ワークショップ）<br>16:20〜17:20";
-  }
-  return base;
-};	
-	
-// ▼ モバイル専用の改行ルール
-const MOBILE_TITLE_RULES = [
-  {
-    match: (t) => t.includes("分科会①（講演／ワークショップ）15:00〜16:00"),
-    html: "分科会①（講演／ワークショップ）<br>15:00〜16:00"
-  },
-  {
-    match: (t) => t.includes("分科会②（講演／ワークショップ）16:20〜17:20"),
-    html: "分科会②（講演／ワークショップ）<br>16:20〜17:20"
-  },	
-  {
-    match: (t) => t.includes("孤独なき『個の時代』"),
-    html: "孤独なき『個の時代』の生存戦略<br>～自己変態理論とは～"
-  },
-  {
-    match: (t) => t.includes("マーケティングが導く企業変革"),
-    html: "マーケティングが導く企業変革<br>〜成長と革新のための戦略〜"
-  },
-  {
-    match: (t) => t.includes("GRAが15年で築いた"),
-    html: "GRAが15年で築いた<br>『社会課題解決型』<br>ローカルスタートアップの軌跡"
-  },
-  {
-    match: (t) => t.includes("チームビルディングが一気に進む"),
-    html: "組織における<br>チームビルディングが<br>一気に進む！<br>「エンゲージメントカード」<br>実践セッション"
-  },
-  {
-    match: (t) => t.includes("速読×時間術で週3日で"),
-    html: "【速読×時間術で週3日で<br>1,000万達成！！】<br>「時間と場所に縛られない」<br>パラレルキャリアの創り方"
-  },
-  {
-    match: (t) => t.includes("夢を仕組みに変える！"),
-    html: "夢を仕組みに変える！<br>〜マクアケ代表 木内氏が語る<br>ゼロからIPO<br>そしてその先への挑戦の軌跡〜"
-  },
-  {
-    match: (t) => t.includes("新規事業立ち上げ」実践論"),
-    html: "【挑戦の熱量を成果に変える】<br>「新規事業立ち上げ」実践論：<br>壁を乗り越え事業創造を駆動する<br>イントレプレナーの実行力と志"
-  },
-  {
-    match: (t) => t.includes("応援される人になるための印象管理"),
-    html: "応援される人になるための<br>印象管理～より良い<br>リレーショナルパワーの築き方～"
-  },
-  {
-    match: (t) => t.includes("『デキる』リーダーが知るべき"),
-    html: "『デキる』リーダーが知るべき、<br>『気遣い』と『ハラスメント』の<br>境界線<br>"
-  }
-];
-
-// 変更後
-  const formatSessionTitle = (title) => {
-  const base = String(title || "");
-  const isMobile =
-    typeof window !== "undefined" &&
-    window.matchMedia &&
-    window.matchMedia("(max-width: 599px)").matches;
-
-  if (!isMobile) {
-    // PC / タブレット：改行コードだけスペースに
-    let text = base.replace(/\r?\n/g, " ");
-    return text;
-  }
-
-  // モバイル：既存の MOBILE_TITLE_RULES だけで分割
-  for (const rule of MOBILE_TITLE_RULES) {
-    if (rule.match(base)) {
-      let html = rule.html;
-      return html;
+    if (base.startsWith("分科会①")) {
+      return "分科会①（講演／ワークショップ）<br>15:00〜16:00";
     }
-  }
+    if (base.startsWith("分科会②")) {
+      return "分科会②（講演／ワークショップ）<br>16:20〜17:20";
+    }
+    return base;
+  };
 
-  // マッチしないものは、改行コードだけ <br> に
-  let html = base.replace(/\r?\n/g, "<br>");
-  return html;
-};
-	
+  const MOBILE_TITLE_RULES = [
+    {
+      match: (t) => t.includes("分科会①（講演／ワークショップ）15:00〜16:00"),
+      html: "分科会①（講演／ワークショップ）<br>15:00〜16:00"
+    },
+    {
+      match: (t) => t.includes("分科会②（講演／ワークショップ）16:20〜17:20"),
+      html: "分科会②（講演／ワークショップ）<br>16:20〜17:20"
+    },
+    {
+      match: (t) => t.includes("孤独なき『個の時代』"),
+      html: "孤独なき『個の時代』の生存戦略<br>～自己変態理論とは～"
+    },
+    {
+      match: (t) => t.includes("マーケティングが導く企業変革"),
+      html: "マーケティングが導く企業変革<br>〜成長と革新のための戦略〜"
+    },
+    {
+      match: (t) => t.includes("GRAが15年で築いた"),
+      html: "GRAが15年で築いた<br>『社会課題解決型』<br>ローカルスタートアップの軌跡"
+    },
+    {
+      match: (t) => t.includes("チームビルディングが一気に進む"),
+      html: "組織における<br>チームビルディングが<br>一気に進む！<br>「エンゲージメントカード」<br>実践セッション"
+    },
+    {
+      match: (t) => t.includes("速読×時間術で週3日で"),
+      html: "【速読×時間術で週3日で<br>1,000万達成！！】<br>「時間と場所に縛られない」<br>パラレルキャリアの創り方"
+    },
+    {
+      match: (t) => t.includes("夢を仕組みに変える！"),
+      html: "夢を仕組みに変える！<br>〜マクアケ代表 木内氏が語る<br>ゼロからIPO<br>そしてその先への挑戦の軌跡〜"
+    },
+    {
+      match: (t) => t.includes("新規事業立ち上げ」実践論"),
+      html: "【挑戦の熱量を成果に変える】<br>「新規事業立ち上げ」実践論：<br>壁を乗り越え事業創造を駆動する<br>イントレプレナーの実行力と志"
+    },
+    {
+      match: (t) => t.includes("応援される人になるための印象管理"),
+      html: "応援される人になるための<br>印象管理～より良い<br>リレーショナルパワーの築き方～"
+    },
+    {
+      match: (t) => t.includes("『デキる』リーダーが知るべき"),
+      html: "『デキる』リーダーが知るべき、<br>『気遣い』と『ハラスメント』の<br>境界線<br>"
+    }
+  ];
+
+  const formatSessionTitle = (title) => {
+    const base = String(title || "");
+    const isMobile =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(max-width: 599px)").matches;
+
+    if (!isMobile) {
+      return base.replace(/\r?\n/g, " ");
+    }
+
+    for (const rule of MOBILE_TITLE_RULES) {
+      if (rule.match(base)) {
+        return rule.html;
+      }
+    }
+
+    return base.replace(/\r?\n/g, "<br>");
+  };
+
   const createBreakBar = (label) => {
     const bar = document.createElement('div');
     bar.className = 'program-break';
@@ -743,6 +733,7 @@ const MOBILE_TITLE_RULES = [
   const createPartCard = (headingText) => {
     const card = document.createElement('section');
     card.className = 'program-card';
+	card.classList.add('card-hover');
 
     const h3 = document.createElement('h3');
     h3.className = 'program-card__head';
@@ -760,6 +751,7 @@ const MOBILE_TITLE_RULES = [
 
     const card = document.createElement('article');
     card.className = 'program-session-card';
+	card.classList.add('card-hover');
 
     const header = document.createElement('div');
     header.className = 'program-session-card__header';
@@ -777,13 +769,11 @@ const MOBILE_TITLE_RULES = [
     const talkFromMap  = id ? (talkMap[id]  || '') : '';
     const labelFromMap = id ? (labelMap[id] || '') : '';
 
-    // schedule 側
     const talkTitleDirect =
-      session.talk_title ||       // schedule から詰めた講演タイトル
-      session.session_title ||    // もし生のカラムがあれば
+      session.talk_title ||
+      session.session_title ||
       '';
 
-    // speakers_master 側（保険）
     const sessionTitleFromSpeakers =
       (speakers || [])
         .map(sp =>
@@ -801,12 +791,10 @@ const MOBILE_TITLE_RULES = [
       (sessionTitleFromSpeakers && sessionTitleFromSpeakers.trim()) ||
       labelFromMap;
 
-        if (sessionTitle) {
+    if (sessionTitle) {
       const titleEl = document.createElement('div');
       titleEl.className = 'program-session-card__title';
-
       titleEl.innerHTML = formatSessionTitle(sessionTitle);
-			
       card.append(titleEl);
     }
 
@@ -835,21 +823,20 @@ const MOBILE_TITLE_RULES = [
 
     card.append(speakersWrap);
 
-
     const pillTags = session.tagPills || [];
     if (pillTags.length) {
-    const tagWrap = document.createElement('div');
-    tagWrap.className = 'program-session-card__tags';
+      const tagWrap = document.createElement('div');
+      tagWrap.className = 'program-session-card__tags';
 
-    pillTags.slice(0, 2).forEach(t => {   // 2個まで表示
-      const pill = document.createElement('span');
-      pill.className = 'program-session-card__tag-pill';
-      pill.textContent = t;
-      tagWrap.append(pill);
-    });
+      pillTags.slice(0, 2).forEach(t => {
+        const pill = document.createElement('span');
+        pill.className = 'program-session-card__tag-pill';
+        pill.textContent = t;
+        tagWrap.append(pill);
+      });
 
-        card.append(tagWrap);
-      }
+      card.append(tagWrap);
+    }
 
     return card;
   };
@@ -880,27 +867,24 @@ const MOBILE_TITLE_RULES = [
           ''
         );
 
-        // ★ HCD2025: desc が講演タイトル
         const talkTitle = pick(
           r,
-          ['desc', '概要', 'session_title'],  // 必要ならここに列名を追加
+          ['desc', '概要', 'session_title'],
           ''
         );
 
         const track = pick(r, ['track', 'room', 'location', '会場'], '');
-          // ▼ ここからタグ関連
+
         const tagsRaw = pick(r, ['tags', 'タグ'], '');
         const tag1    = pick(r, ['tag1', 'tag_1', 'タグ1'], '');
         const tag2    = pick(r, ['tag2', 'tag_2', 'タグ2'], '');
 
-          // ロジック（Keynote 判定など）用の tags
         const tags = tagsRaw
-            ? tagsRaw.split(',')
-                .map(s => s.trim())
-                .filter(Boolean)
-            : [];
+          ? tagsRaw.split(',')
+              .map(s => s.trim())
+              .filter(Boolean)
+          : [];
 
-          // 画面に出す用は tag1 / tag2 のみ
         const tagPills = [];
         if (tag1) tagPills.push(tag1);
         if (tag2) tagPills.push(tag2);
@@ -911,8 +895,8 @@ const MOBILE_TITLE_RULES = [
           title: label,
           talk_title: talkTitle,
           track,
-          tags,       // ← ロジック用
-          tagPills    // ← 表示用
+          tags,
+          tagPills
         };
         schedule.push(row);
 
@@ -946,7 +930,6 @@ const MOBILE_TITLE_RULES = [
         const title5 = pick(r, ['title5'], '');
         const track  = pick(r, ['track'], '');
 
-        // speakers_master 側にあるセッションタイトル（補完用）
         const session_title_raw = pick(r, ['session_title'], '');
 
         const session_raw = pick(r, ['session_id','Session_ID'], '');
@@ -1053,17 +1036,18 @@ const MOBILE_TITLE_RULES = [
           '';
 
         if (keynoteTitle) {
-        const st = document.createElement('p');
-        st.className = 'program-session-main-title';
-        st.innerHTML = formatSessionTitle(keynoteTitle);
-        body1.append(st);
-    }
+          const st = document.createElement('p');
+          st.className = 'program-session-main-title';
+          st.innerHTML = formatSessionTitle(keynoteTitle);
+          body1.append(st);
+        }
         const grid = document.createElement('div');
         grid.className = 'program-speaker-grid';
 
         spList.forEach(sp => {
           const card = document.createElement('article');
           card.className = 'program-speaker-card';
+          card.classList.add('card-hover');
 
           const img = document.createElement('img');
           img.className = 'program-speaker-card__photo';
@@ -1170,8 +1154,6 @@ const MOBILE_TITLE_RULES = [
       sec2.append(grid2);
       body2.append(sec2);
 
-      // ★ ここで「今のウィンドウ幅」に応じてタイトルをセットし、
-      //   resize 時にも呼び直す
       const applyBreakoutTitles = () => {
         h1.innerHTML = formatBreakoutTitle(breakoutTitle1);
         h2.innerHTML = formatBreakoutTitle(breakoutTitle2);
@@ -1242,13 +1224,10 @@ const MOBILE_TITLE_RULES = [
     try {
       const { mapText } = await loadTextMaps();
 
-      // ▼ タイトル・リード
       if (TITLE) {
         const rawTitle =
           (mapText.notice_title || '').trim() ||
           '＜重要なお知らせ＞<br>オンライン参加 無料化について';
-
-        // <br> を効かせる
         TITLE.innerHTML = rawTitle;
       }
 
@@ -1258,7 +1237,6 @@ const MOBILE_TITLE_RULES = [
           '本イベントでは、オンライン参加の参加費を無料とさせていただきました。';
       }
 
-      // ▼ ボディコピー（<br> を使いたい前提で innerHTML）
       if (BODY) {
         const body = (mapText.notice_body || '').trim();
         if (body) {
@@ -1266,7 +1244,6 @@ const MOBILE_TITLE_RULES = [
         }
       }
 
-      // ▼ 改行2行を、デバイスによって整形
       const formatChangeText = (src, fallback) => {
         const raw = (src && src.trim()) || fallback || "";
         const lines = raw
@@ -1275,22 +1252,19 @@ const MOBILE_TITLE_RULES = [
           .filter(Boolean);
         if (!lines.length) return "";
 
-        const title  = lines[0];         // 【変更前】 or 【変更後】
-        const bodies = lines.slice(1);   // 2行ぶん
+        const title  = lines[0];
+        const bodies = lines.slice(1);
 
         const isMobile = window.matchMedia("(max-width: 599px)").matches;
 
         if (isMobile) {
-          // スマホ：そのまま縦2行
           return [title, ...bodies].join("<br>");
         } else {
-          // PC / タブレット：2行を「／」で1行に
           const joined = bodies.join("／");
           return `${title}<br>${joined}`;
         }
       };
 
-      // ▼ 変更前／変更後
       if (CHG_TITLE) {
         CHG_TITLE.textContent =
           (mapText.notice_change_title || '').trim() ||
@@ -1313,10 +1287,9 @@ const MOBILE_TITLE_RULES = [
 東京校でのご参加の方：1,000円
 オンラインでのご参加の方：無料`
         );
-        CHG_AFTER.classList.add('notice-change__after'); // ★ 赤字用クラス
+        CHG_AFTER.classList.add('notice-change__after');
       }
 
-      // ▼ ケース別FAQ（カテゴリ管理）
       if (FAQ_TITLE) {
         FAQ_TITLE.textContent =
           (mapText.notice_faq_title || '').trim() ||
@@ -1327,14 +1300,12 @@ const MOBILE_TITLE_RULES = [
         const groups = [
           { code: 'online', titleKey: 'notice_faq_cat_online_title' },
           { code: 'real',   titleKey: 'notice_faq_cat_real_title' },
-          // ここに { code: 'xxx', titleKey: 'notice_faq_cat_xxx_title' } を足せばカテゴリ追加
         ];
 
         groups.forEach(group => {
           const titleText = (mapText[group.titleKey] || '').trim();
-          if (!titleText) return;  // タイトル未設定ならそのカテゴリを丸ごとスキップ
+          if (!titleText) return;
 
-          // カテゴリ全体のラッパー
           const catWrap = document.createElement('section');
           catWrap.className = 'notice-faq-category';
 
@@ -1345,7 +1316,6 @@ const MOBILE_TITLE_RULES = [
           const catList = document.createElement('div');
           catList.className = 'notice-faq-category-list';
 
-          // Q/Aを拾う（最大10件くらい）
           for (let i = 1; i <= 10; i++) {
             const qKey = `notice_faq_${group.code}_q${i}`;
             const aKey = `notice_faq_${group.code}_a${i}`;
@@ -1355,6 +1325,7 @@ const MOBILE_TITLE_RULES = [
 
             const card = document.createElement('article');
             card.className = 'faq-card';
+            card.classList.add('card-hover');
 
             const qBtn = document.createElement('button');
             qBtn.type = 'button';
@@ -1383,76 +1354,81 @@ const MOBILE_TITLE_RULES = [
               aWrap.hidden = !willOpen;
               card.classList.toggle('is-open', willOpen);
               icon.textContent = willOpen ? '－' : '＋';
+
+              if (willOpen) {
+                track('notice_faq_open', {
+                  category: group.code, // 'online' or 'real'
+                  index: i,             // 1〜10
+                  question: q
+                });
+              }
             });
 
             card.append(qBtn, aWrap);
             catList.append(card);
           }
 
-          // 1件も Q がなければカテゴリ自体出さない
           if (catList.children.length === 0) return;
 
           catWrap.append(catTitle, catList);
           FAQ_LIST.append(catWrap);
         });
 
-      // ▼ ここまでで BODY / .notice-change / .notice-faq に中身が入った想定
-      //    → まとめて折りたたみ領域にする
+        const wrap = document.querySelector('.notice-wrap');
+        if (wrap && BODY) {
+          const changeEl = document.querySelector('.notice-change');
+          const faqEl    = document.querySelector('.notice-faq');
 
-      const wrap = document.querySelector('.notice-wrap');
-      if (wrap && BODY) {
-        const changeEl = document.querySelector('.notice-change');
-        const faqEl    = document.querySelector('.notice-faq');
+          if (changeEl || faqEl || BODY.textContent.trim()) {
+            const detail = document.createElement('div');
+            detail.className = 'notice-detail is-collapsed';
 
-        // どれも存在しない場合は折りたたみ処理はスキップ
-        if (changeEl || faqEl || BODY.textContent.trim()) {
-          // 詳細用ラッパー
-          const detail = document.createElement('div');
-          detail.className = 'notice-detail is-collapsed';
-
-          // BODY, 変更前後, FAQ を detail の中へ移動
-          if (BODY.parentElement === wrap) {
-            detail.appendChild(BODY);
-          }
-          if (changeEl && changeEl.parentElement === wrap) {
-            detail.appendChild(changeEl);
-          }
-          if (faqEl && faqEl.parentElement === wrap) {
-            detail.appendChild(faqEl);
-          }
-
-          // トグルボタンを作成
-          const toggle = document.createElement('button');
-          toggle.type = 'button';
-          toggle.className = 'notice-toggle';
-          toggle.innerHTML = `
-            <span class="notice-toggle-icon">∨</span>
-            <span class="notice-toggle-label">さらに詳しく</span>
-          `;
-
-          toggle.addEventListener('click', () => {
-            const willOpen = detail.classList.contains('is-collapsed');
-            detail.classList.toggle('is-collapsed', !willOpen);
-            toggle.classList.toggle('is-open', willOpen);
-            // ラベルを「閉じる」に変えるならここで
-            const label = toggle.querySelector('.notice-toggle-label');
-            if (label) {
-              label.textContent = willOpen ? '閉じる' : 'さらに詳しく';
+            if (BODY.parentElement === wrap) {
+              detail.appendChild(BODY);
             }
-          });
+            if (changeEl && changeEl.parentElement === wrap) {
+              detail.appendChild(changeEl);
+            }
+            if (faqEl && faqEl.parentElement === wrap) {
+              detail.appendChild(faqEl);
+            }
 
-          // LEAD のすぐ後ろにボタン、その後に detail を挿入
-          if (LEAD && LEAD.parentElement === wrap) {
-            wrap.insertBefore(toggle, LEAD.nextSibling);
-            wrap.insertBefore(detail, toggle.nextSibling);
-          } else {
-            // 念のため: LEAD がなければタイトルの後ろに
-            const ref = TITLE && TITLE.parentElement === wrap ? TITLE.nextSibling : wrap.firstChild;
-            wrap.insertBefore(toggle, ref);
-            wrap.insertBefore(detail, toggle.nextSibling);
+            const toggle = document.createElement('button');
+            toggle.type = 'button';
+            toggle.className = 'notice-toggle';
+            toggle.innerHTML = `
+              <span class="notice-toggle-icon">∨</span>
+              <span class="notice-toggle-label">さらに詳しく</span>
+            `;
+
+            toggle.addEventListener('click', () => {
+              const willOpen = detail.classList.contains('is-collapsed');
+              detail.classList.toggle('is-collapsed', !willOpen);
+              toggle.classList.toggle('is-open', willOpen);
+
+              const label = toggle.querySelector('.notice-toggle-label');
+              if (label) {
+                label.textContent = willOpen ? '閉じる' : 'さらに詳しく';
+              }
+
+              track('notice_detail_toggle', {
+                state: willOpen ? 'open' : 'close'
+              });
+            });
+
+            if (LEAD && LEAD.parentElement === wrap) {
+              wrap.insertBefore(toggle, LEAD.nextSibling);
+              wrap.insertBefore(detail, toggle.nextSibling);
+            } else {
+              const ref =
+                TITLE && TITLE.parentElement === wrap
+                  ? TITLE.nextSibling
+                  : wrap.firstChild;
+              wrap.insertBefore(toggle, ref);
+              wrap.insertBefore(detail, toggle.nextSibling);
+            }
           }
         }
-      }
       }
     } catch (e) {
       console.error('NOTICE error', e);
@@ -1460,26 +1436,23 @@ const MOBILE_TITLE_RULES = [
   })();
 })();
 
-
 // =============================================================================================
-// FAQ（HCD2025_LP_text_master.csv → faq_q1〜faq_q8 / faq_a1〜faq_a8）
+// FAQ（HCD2025_LP_text_master.csv → faq_q1〜faq_q15 / faq_a1〜faq_a15）
 // =============================================================================================
 (() => {
-  const SEC     = document.getElementById('faq');
-  const TITLE   = SEC ? SEC.querySelector('.faq-title') : null;
-  const LIST    = document.getElementById('faq-list');
+  const SEC   = document.getElementById('faq');
+  const TITLE = SEC ? SEC.querySelector('.faq-title') : null;
+  const LIST  = document.getElementById('faq-list');
   if (!SEC || !LIST) return;
 
   (async () => {
     try {
       const { mapText } = await loadTextMaps();
 
-      // セクションタイトルを差し替え
       if (TITLE) {
         TITLE.textContent = mapText.faq_section_title || 'よくあるご質問';
       }
 
-      // Q1〜Q8 を順番に生成
       for (let i = 1; i <= 15; i++) {
         const qKey = `faq_q${i}`;
         const aKey = `faq_a${i}`;
@@ -1488,11 +1461,10 @@ const MOBILE_TITLE_RULES = [
         const a = (mapText[aKey] || '').trim();
         if (!q) continue;
 
-        // カード全体
         const card = document.createElement('article');
         card.className = 'faq-card';
+        card.classList.add('card-hover');
 
-        // 質問ボタン
         const qBtn = document.createElement('button');
         qBtn.type = 'button';
         qBtn.className = 'faq-card__question';
@@ -1507,7 +1479,6 @@ const MOBILE_TITLE_RULES = [
 
         qBtn.append(qText, icon);
 
-        // 回答
         const aWrap = document.createElement('div');
         aWrap.className = 'faq-card__answer';
         aWrap.hidden = true;
@@ -1516,18 +1487,16 @@ const MOBILE_TITLE_RULES = [
         aP.textContent = `A. ${a}`;
         aWrap.appendChild(aP);
 
-        // 開閉処理
         qBtn.addEventListener('click', () => {
           const willOpen = aWrap.hidden;
-          aWrap.hidden = !willOpen;              // true → false で表示
+          aWrap.hidden = !willOpen;
           card.classList.toggle('is-open', willOpen);
           icon.textContent = willOpen ? '－' : '＋';
-　　　　 // ★ 開いたときだけ計測
+
           if (willOpen) {
             track('faq_open', {
               faq_index: i,
               faq_question: q,
-              page: location.pathname
             });
           }
         });
@@ -1541,23 +1510,36 @@ const MOBILE_TITLE_RULES = [
   })();
 })();
 
-
 // =============================================================================================
 // HEADER NAV: hamburger & smooth scroll
 // =============================================================================================
 (() => {
-  const HEADER_OFFSET = 64; // ヘッダー高さぶんオフセット
+  const HEADER_OFFSET = 64;
 
   const header = document.querySelector('.global-header');
   const menuBtn = document.querySelector('.global-header__menu-btn');
+
+  const headerCta = document.querySelector('.global-header__cta');
+  if (headerCta) {
+    headerCta.addEventListener('click', () => {
+      track('peatix_click', {
+        link_url: headerCta.href,
+        position: 'header',
+      });
+    });
+  }
+
+  // ハンバーガー開閉
   if (menuBtn && header) {
     menuBtn.addEventListener('click', () => {
       const open = header.classList.toggle('is-open');
       menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  track('global_nav_toggle', {
+        state: open ? 'open' : 'close',
+      });
     });
   }
-
-  // ヘッダー内のすべての #リンク（PCナビ＋ドロワーの両方）
+  // ナビ内アンカーのスムーススクロール
   const links = document.querySelectorAll('.global-header a[href^="#"]');
 
   links.forEach(link => {
@@ -1571,17 +1553,319 @@ const MOBILE_TITLE_RULES = [
 
       e.preventDefault();
 
-      // ドロワーを閉じる
       if (header && header.classList.contains('is-open')) {
         header.classList.remove('is-open');
         if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
       }
 
-      // スムーズスクロール
       const y = target.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
       window.scrollTo({ top: y, behavior: 'smooth' });
     });
   });
+
+  // ▼ ここから追加：スクロールしたら .is-scrolled を付ける
+  if (header) {
+    const onScroll = () => {
+      const y = window.scrollY || window.pageYOffset;
+      header.classList.toggle('is-scrolled', y > 20);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // 初期状態も反映
+  }
+})();
+
+// =============================================================================================
+// VOICES（HCDの声 / G会の声）
+// =============================================================================================
+(() => {
+  const secH   = document.getElementById('voices-hcd');
+  const secG   = document.getElementById('voices-gkai');
+  if (!secH && !secG) return;
+
+  const gridH  = document.getElementById('voices-hcd-grid');
+  const gridG  = document.getElementById('voices-gkai-grid');
+
+  const titleH = document.getElementById('voices-hcd-title');
+  const subH   = document.getElementById('voices-hcd-sub');
+  const titleG = document.getElementById('voices-gkai-title');
+  const subG   = document.getElementById('voices-gkai-sub');
+
+  const PLACEHOLDER = './assets/placeholder_square.jpg';
+
+  const safe = (v) => (v == null ? '' : String(v).trim());
+
+  const formatVoicesTitle = (kind, text = "") => {
+    const base = safe(text);
+    const isSP =
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(max-width: 480px)').matches;
+
+    if (!isSP) return base;
+
+    if (kind === 'gkai') {
+      return base.replace(
+        'グロービス経営大学院卒業生ネットワーク『G会』',
+        'グロービス経営大学院<br>卒業生ネットワーク<br>『G会』'
+      );
+    }
+
+    return base;
+  };
+
+  const equalizeVoiceCardHeights = () => {
+    const cards = document.querySelectorAll('.voice-card');
+    if (!cards.length) return;
+
+    cards.forEach((card) => {
+      card.style.height = 'auto';
+    });
+
+    const mq = window.matchMedia('(min-width: 600px)');
+    if (!mq.matches) return;
+
+    let maxH = 0;
+    cards.forEach((card) => {
+      const h = card.offsetHeight;
+      if (h > maxH) maxH = h;
+    });
+
+    cards.forEach((card) => {
+      card.style.height = `${maxH}px`;
+    });
+  };
+
+  const createCard = (row, mode) => {
+    const name    = safe(row.person_name);
+    const tagline = safe(row.person_tagline);
+    const photo   = safe(row.photo_file);
+
+    const title =
+      mode === 'hcd'
+        ? safe(row.voice_hcd_title)
+        : safe(row.voice_gkai_title);
+
+    const body =
+      mode === 'hcd'
+        ? safe(row.voice_hcd_body)
+        : safe(row.voice_gkai_body);
+
+    if (!title && !body) return null;
+
+    const card = document.createElement('article');
+    card.className = 'voice-card card-hover';
+
+    const head = document.createElement('div');
+    head.className = 'voice-card__head';
+
+    const photoWrap = document.createElement('div');
+    photoWrap.className = 'voice-card__photo-wrap';
+
+    const img = document.createElement('img');
+    img.className = 'voice-card__photo';
+    img.src = photo ? `./assets/${photo}` : PLACEHOLDER;
+    img.alt = name || '参加者';
+    img.onerror = () => {
+      img.onerror = null;
+      img.src = PLACEHOLDER;
+    };
+
+    photoWrap.appendChild(img);
+
+    const headText = document.createElement('div');
+
+    const nameEl = document.createElement('p');
+    nameEl.className = 'voice-card__name';
+    nameEl.textContent = name;
+
+    const tagEl = document.createElement('p');
+    tagEl.className = 'voice-card__tagline';
+    tagEl.textContent = tagline;
+
+    headText.append(nameEl, tagEl);
+    head.append(photoWrap, headText);
+
+    const titleEl = document.createElement('h3');
+    titleEl.className = 'voice-card__title';
+    titleEl.textContent = title;
+
+    const bodyEl = document.createElement('p');
+    bodyEl.className = 'voice-card__body';
+    bodyEl.textContent = body;
+
+    card.append(head, titleEl, bodyEl);
+    return card;
+  };
+
+  const formatVoicesSub = (kind, text = "") => {
+    const base = String(text || "");
+    const isSP =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(max-width: 480px)").matches;
+
+    if (!isSP) return base;
+
+    let t = base;
+
+    if (kind === "hcd") {
+      t = t.replace(
+        "幅広い期・多様なバックグラウンドの",
+        "幅広い期・多様なバックグラウンドの<br>"
+      );
+      t = t.replace(
+        "卒業生と事務局の方に、",
+        "卒業生と事務局の方に、<br>"
+      );
+      t = t.replace(
+        "印象に残っているシーンなど、",
+        "印象に残っているシーンなど、<br>"
+      );
+    } else if (kind === "gkai") {
+      t = t.replace(
+        "『タテ・ヨコ・ナナメのゆるいつながりを作る』",
+        "『タテ・ヨコ・ナナメのゆるいつながりを作る』<br>"
+      );
+      t = t.replace(
+        "G会は、<br>卒業生全員が",
+        "G会は、卒業生全員が"
+      );
+      t = t.replace(
+        "卒業生全員がメンバーとするグロービス",
+        "卒業生全員がメンバーとするグロービス<br>"
+      );
+      t = t.replace(
+        "アルムナイネットワークです。",
+        "アルムナイネットワークです。<br>"
+      );
+      t = t.replace(
+        "挑戦を応援し合う仲間、",
+        "挑戦を応援し合う仲間、<br>"
+      );
+      t = t.replace(
+        "あなたにとってG会とはどんな存在か？",
+        "あなたにとってG会とはどんな存在か？<br>"
+      );
+    }
+    return t;
+  };
+
+  const setupVoicesObserver = () => {
+    if (typeof window === 'undefined') return;
+
+    const cards = document.querySelectorAll('.voice-card');
+    if (!cards.length) return;
+
+    if (!('IntersectionObserver' in window)) {
+      cards.forEach((card) => {
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            obs.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        root: null,
+        threshold: 0.2,
+        rootMargin: '0px 0px -10% 0px',
+      }
+    );
+
+    cards.forEach((card) => observer.observe(card));
+  };
+
+  (async () => {
+    try {
+      const { mapText } = await loadTextMaps();
+
+      const rawTitleH =
+        safe(mapText.voices_hcd_title) || 'ホームカミングデーの思い出';
+      const rawTitleG =
+        safe(mapText.voices_gkai_title) || 'グロービス卒業生ネットワーク『G会』';
+
+      const applyVoicesTitles = () => {
+        if (titleH) {
+          titleH.innerHTML = formatVoicesTitle('hcd', rawTitleH);
+        }
+        if (titleG) {
+          titleG.innerHTML = formatVoicesTitle('gkai', rawTitleG);
+        }
+      };
+      applyVoicesTitles();
+      window.addEventListener('resize', applyVoicesTitles, { passive: true });
+
+      const rawSubH = safe(mapText.voices_hcd_sub);
+      const rawSubG = safe(mapText.voices_gkai_sub);
+
+      if (subH) {
+        const applySubH = () => {
+          const txt =
+            rawSubH ||
+            'これまでのHomecoming Dayに参加した卒業生の声をご紹介します。';
+          subH.innerHTML = formatVoicesSub("hcd", txt);
+        };
+        applySubH();
+        window.addEventListener("resize", applySubH, { passive: true });
+      }
+
+      if (subG) {
+        const applySubG = () => {
+          const txt =
+            rawSubG ||
+            'G会や卒業生コミュニティへの想いを、卒業生のみなさんに伺いました。';
+          subG.innerHTML = formatVoicesSub("gkai", txt);
+        };
+        applySubG();
+        window.addEventListener("resize", applySubG, { passive: true });
+      }
+
+      const rows = await fetchCsvStrict('./data/HCD2025_voices_master.csv');
+
+      const sorted = rows
+        .map((r) => ({
+          ...r,
+          orderNum: Number(safe(r.order).replace(/[^\d]/g, '')) || 9999,
+        }))
+        .sort((a, b) => a.orderNum - b.orderNum);
+
+      if (secH && gridH) {
+        sorted.forEach((row) => {
+          const card = createCard(row, 'hcd');
+          if (card) {
+            gridH.appendChild(card);
+          }
+        });
+      }
+
+      if (secG && gridG) {
+        sorted.forEach((row) => {
+          const card = createCard(row, 'gkai');
+          if (card) {
+            gridG.appendChild(card);
+          }
+        });
+      }
+
+      equalizeVoiceCardHeights();
+
+      window.addEventListener('resize', equalizeVoiceCardHeights, {
+        passive: true,
+      });
+
+      setupVoicesObserver();
+
+    } catch (e) {
+      console.error('VOICES error', e);
+    }
+  })();
 })();
 
 // =============================================================================================
@@ -1595,7 +1879,56 @@ const MOBILE_TITLE_RULES = [
     track('footer_facebook_click', {
       link_url: fbLink.href,
       position: 'footer',
-      page: location.pathname
     });
+  });
+})();
+
+// =============================================================================================
+// SECTION VIEW tracking（各セクションが初めて 40% 以上見えたタイミングで計測）
+// =============================================================================================
+(() => {
+  if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+    return;
+  }
+
+  const targets = [
+    { id: 'hero',        name: 'hero' },
+    { id: 'about',       name: 'about' },
+    { id: 'notice-cost', name: 'notice_cost' },
+    { id: 'program',     name: 'program' },
+    { id: 'speakers',    name: 'speakers' },
+    { id: 'voices-hcd',  name: 'voices_hcd' },
+    { id: 'faq',         name: 'faq' },
+    { id: 'access',      name: 'access' },
+    { id: 'voices-gkai', name: 'voices_gkai' }
+  ];
+
+  const seen = new Set();
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.id;
+        const conf = targets.find(t => t.id === id);
+        if (!conf || seen.has(conf.name)) return;
+
+        seen.add(conf.name);
+
+        track('section_view', {
+          section: conf.name,
+        });
+
+        observer.unobserve(entry.target);
+      });
+    },
+    {
+      threshold: 0.4
+    }
+  );
+
+  targets.forEach((t) => {
+    const el = document.getElementById(t.id);
+    if (el) observer.observe(el);
   });
 })();
